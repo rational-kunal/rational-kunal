@@ -4,6 +4,7 @@
 Passionate iOS developer here, who likes to get his hands dirty.
 
 Here is the list of my recent blogs:
+- [Let’s highlight](https://dev.to/rationalkunal/lets-highlight-5lc)
 - [Is UIView (mostly) visible](https://dev.to/rationalkunal/is-uiview-mostly-visible-59jf)
 - [Xcode debugging cheatsheet](https://dev.to/rationalkunal/xcode-debugging-cheatsheet-10ib)
 - [How to Parallax?](https://dev.to/rationalkunal/how-to-parallax-1gh3)
