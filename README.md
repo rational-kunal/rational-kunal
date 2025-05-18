@@ -1,10 +1,9 @@
-
-![Hi there, this is Kunal Kamble](https://github.com/rational-kunal/rational-kunal/assets/28783605/63b346d1-112f-4e40-9263-ad36f58f28f2)
-
 Passionate iOS developer here, who likes to get his hands dirty.
 
 Here is the list of my recent blogs:
-- [ReverseEngineering[0]: UnReel your Instagram](https://dev.to/rationalkunal/reverseengineering0-unreel-your-instagram-1gh6)
+- [Building Optional from scratch](https://dev.to/rationalkunal/building-optional-from-scratch-l2i)
+- [Building a Snake Game (on terminal with Swift)](https://dev.to/rationalkunal/building-a-snake-game-on-terminal-with-swift-57a2)
+- [ReverseEngineering\[0\]: UnReel your Instagram](https://dev.to/rationalkunal/reverseengineering0-unreel-your-instagram-1gh6)
 - [Let’s highlight](https://dev.to/rationalkunal/lets-highlight-5lc)
 - [Is UIView (mostly) visible](https://dev.to/rationalkunal/is-uiview-mostly-visible-59jf)
 - [Xcode debugging cheatsheet](https://dev.to/rationalkunal/xcode-debugging-cheatsheet-10ib)
