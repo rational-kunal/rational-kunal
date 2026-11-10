@@ -1,0 +1,178 @@
+---
+/**
+ * Renders a Diagram spec as hand-drawn SVG.
+ *
+ * Every path is generated here, during the build, from a seeded wobble. The
+ * browser receives finished SVG: no drawing library, no script, no bundle.
+ */
+import { roughRect, roughLine, roughArrow, roughHatch, roughCross } from '@/lib/rough';
+import { routeEdge, labelSpot, type Diagram, type DiagramNode } from '@/lib/diagram';
+
+interface Props {
+  diagram: Diagram;
+  /** Heading the figure is labelled by, for screen readers. */
+  title: string;
+  class?: string;
+}
+
+const { diagram, title: ttl, class: klass = '' } = Astro.props;
+const spec = diagram;
+
+const byId = new Map(spec.nodes.map((n) => [n.id, n]));
+const uid = `dg-${spec.seed}`;
+
+type Piece = {
+  path: string;
+  kind: 'stroke' | 'mark' | 'faint';
+  width: number;
+  dashed?: boolean;
+  len: number;
+};
+
+const pieces: Piece[] = [];
+const hatches: string[] = [];
+const crosses: string[] = [];
+
+let s = spec.seed;
+const nextSeed = () => (s = (s * 1103515245 + 12345) % 2147483647);
+
+/* --- Boxes ------------------------------------------------------------- */
+for (const n of spec.nodes) {
+  if (n.emphasis) hatches.push(roughHatch(n.x + 3, n.y + 3, n.w - 6, n.h - 6, nextSeed(), 9));
+  pieces.push({
+    path: roughRect(n.x, n.y, n.w, n.h, nextSeed(), { wobble: n.struck ? 1.3 : 1.9 }),
+    kind: n.emphasis ? 'mark' : n.struck ? 'faint' : 'stroke',
+    width: n.emphasis ? 1.9 : 1.5,
+    len: Math.max(n.w, n.h) + 14,
+  });
+  if (n.struck) crosses.push(roughCross(n.x, n.y, n.w, n.h, nextSeed()));
+}
+
+/* --- Edges -------------------------------------------------------------- */
+type EdgeLabel = { x: number; y: number; text: string; w: number };
+const edgeLabels: EdgeLabel[] = [];
+
+for (const e of spec.edges) {
+  const a = byId.get(e.from);
+  const b = byId.get(e.to);
+  if (!a || !b) throw new Error(`Diagram ${spec.seed}: unknown node in edge ${e.from} -> ${e.to}`);
+
+  const pts = routeEdge(a, b, e.via);
+  let longest = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p = pts[i];
+    const q = pts[i + 1];
+    longest = Math.max(longest, Math.hypot(q.x - p.x, q.y - p.y));
+    const last = i === pts.length - 2;
+    const path = last
+      ? roughArrow(p.x, p.y, q.x, q.y, nextSeed(), { wobble: 1.1 })
+      : roughLine(p.x, p.y, q.x, q.y, nextSeed(), { wobble: 1.1 });
+    pieces.push({
+      path,
+      kind: e.accent ? 'mark' : 'stroke',
+      width: 1.45,
+      dashed: e.dashed,
+      len: longest + 16,
+    });
+  }
+
+  if (e.label) {
+    const at = labelSpot(pts);
+    edgeLabels.push({ x: at.x, y: at.y, text: e.label, w: e.label.length * 5.4 + 10 });
+  }
+}
+
+const centre = (n: DiagramNode) => ({ cx: n.x + n.w / 2, cy: n.y + n.h / 2 });
+---
+
+<figure class={`fig ${klass}`}>
+  <div class="fig__plate plate plate--sunk">
+    <div class="plate__core fig__core">
+      <svg
+        class="diagram diagram--draw"
+        viewBox={`0 0 ${spec.width} ${spec.height}`}
+        role="img"
+        aria-labelledby={`${uid}-t ${uid}-d`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <title id={`${uid}-t`}>{ttl}</title>
+        <desc id={`${uid}-d`}>{spec.caption}</desc>
+
+        {/* Solid fills sit under the drawn outline so edges never show through. */}
+        {spec.nodes.map((n) => (
+          <rect x={n.x} y={n.y} width={n.w} height={n.h} rx="4" class="d-fill" />
+        ))}
+
+        {hatches.map((h) => (
+          <path d={h} class="d-mark" stroke-width="1" opacity="0.26" />
+        ))}
+
+        {pieces.map((p) => (
+          <path
+            d={p.path}
+            class={p.kind === 'mark' ? 'd-mark' : p.kind === 'faint' ? 'd-faint' : 'd-stroke'}
+            stroke-width={p.width}
+            stroke-dasharray={p.dashed ? '6 5' : undefined}
+            style={p.dashed ? undefined : `--len:${Math.round(p.len)}`}
+          />
+        ))}
+
+        {crosses.map((c) => (
+          <path d={c} class="d-faint" stroke-width="1.6" />
+        ))}
+
+        {/* Edge labels get a paper chip behind them so they stay readable. */}
+        {edgeLabels.map((l) => (
+          <>
+            <rect
+              x={l.x - l.w / 2} y={l.y - 7} width={l.w} height={14} rx="3"
+              fill="var(--paper-sunk)"
+            />
+            <text x={l.x} y={l.y + 3.2} class="d-edge" text-anchor="middle">{l.text}</text>
+          </>
+        ))}
+
+        {spec.nodes.map((n) => {
+          const { cx, cy } = centre(n);
+          return (
+            <>
+              <text
+                x={cx}
+                y={n.sub ? cy - 1 : cy + 4}
+                class={`d-label${n.emphasis ? ' d-accent-text' : ''}`}
+                text-anchor="middle"
+                opacity={n.struck ? 0.55 : 1}
+              >{n.label}</text>
+              {n.sub && (
+                <text x={cx} y={cy + 14} class="d-sub" text-anchor="middle">{n.sub}</text>
+              )}
+            </>
+          );
+        })}
+
+        {(spec.notes ?? []).map((nt) => (
+          <text x={nt.x} y={nt.y} class="d-note" text-anchor={nt.anchor ?? 'middle'}>{nt.text}</text>
+        ))}
+      </svg>
+    </div>
+  </div>
+  <figcaption class="fig__cap">{spec.caption}</figcaption>
+</figure>
+
+<style>
+  .fig { margin: 0; }
+  .fig__plate { width: 100%; }
+  .fig__core { padding: clamp(0.75rem, 2vw, 1.5rem); }
+  .fig__cap {
+    margin-top: 0.85rem;
+    font-size: var(--t-small);
+    line-height: 1.55;
+    color: var(--ink-3);
+    max-width: 62ch;
+  }
+  /* The drawing carries the meaning; the caption is the same thing in words,
+     so on a phone it does the heavier lifting. */
+  @media (max-width: 560px) {
+    .fig__cap { color: var(--ink-2); }
+  }
+</style>

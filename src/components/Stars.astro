@@ -1,0 +1,12 @@
+---
+import Icon from './Icon.astro';
+interface Props { count: number; }
+const { count } = Astro.props;
+---
+<span class="stars meta" title={`${count} stars on GitHub`}>
+  <Icon name="star" size={12} />
+  {count}
+</span>
+<style>
+  .stars { display: inline-flex; align-items: center; gap: 0.28rem; color: var(--ink-3); }
+</style>

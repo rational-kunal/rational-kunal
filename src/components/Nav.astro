@@ -1,0 +1,204 @@
+---
+import { nav, site, resumeHref, resumeIsFile } from '@/data/site';
+import { url } from '@/lib/url';
+import Icon from './Icon.astro';
+
+const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isOn = (href: string) => here === url(href).replace(/\/$/, '');
+---
+
+<header class="site-nav">
+  <nav class="rail" aria-label="Primary">
+    <a class="rail__home" href={url('/')} aria-label={`${site.name}, home`}>
+      <span class="rail__mono" aria-hidden="true">kk</span>
+      <span class="rail__name">{site.name}</span>
+    </a>
+
+    <ul class="rail__links">
+      {nav.map((item) => (
+        <li>
+          <a
+            href={url(item.href)}
+            class:list={['rail__link', { 'is-on': isOn(item.href) }]}
+            aria-current={isOn(item.href) ? 'page' : undefined}
+          >{item.label}</a>
+        </li>
+      ))}
+    </ul>
+
+    <a class="btn btn--solid rail__cta" href={url(resumeHref)} download={resumeIsFile || undefined}>
+      Résumé
+      <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
+    </a>
+
+    <!-- Mobile menu. A details element, so the whole thing works without JS. -->
+    <details class="burger">
+      <summary aria-label="Menu">
+        <span class="burger__bar"></span>
+        <span class="burger__bar"></span>
+      </summary>
+      <div class="burger__sheet">
+        <ul>
+          {nav.map((item) => <li><a href={url(item.href)}>{item.label}</a></li>)}
+        </ul>
+        <a class="btn btn--solid" href={url(resumeHref)} download={resumeIsFile || undefined}>
+          Résumé
+          <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
+        </a>
+      </div>
+    </details>
+  </nav>
+</header>
+
+<style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    padding: 0.85rem var(--gutter) 0;
+    pointer-events: none;
+  }
+
+  /* A floating pill, detached from the top edge. Never taller than 68px. */
+  .rail {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    height: 60px;
+    width: 100%;
+    max-width: var(--wide);
+    margin-inline: auto;
+    padding: 0 0.5rem 0 0.85rem;
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-pill);
+    background: color-mix(in srgb, var(--paper) 72%, transparent);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    box-shadow: var(--lift), var(--inner-hi);
+  }
+
+  .rail__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    text-decoration: none;
+    font-weight: 560;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    margin-right: auto;
+  }
+  .rail__mono {
+    display: grid;
+    place-items: center;
+    width: 1.9rem; height: 1.9rem;
+    border-radius: var(--r-pill);
+    background: var(--mark);
+    color: var(--mark-ink);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0;
+  }
+  .rail__name { font-size: 0.95rem; }
+
+  .rail__links {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    list-style: none;
+    padding: 0;
+  }
+  .rail__link {
+    display: inline-block;
+    padding: 0.45rem 0.8rem;
+    border-radius: var(--r-pill);
+    font-size: var(--t-small);
+    text-decoration: none;
+    color: var(--ink-2);
+    transition: color var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+  }
+  .rail__link:hover { color: var(--ink); background: var(--shell); }
+  .rail__link.is-on { color: var(--mark); background: var(--mark-wash); }
+
+  .rail__cta { margin-left: 0.35rem; }
+
+  /* --- Mobile ----------------------------------------------------------- */
+  .burger { display: none; position: relative; }
+  .burger summary {
+    list-style: none;
+    display: grid;
+    place-items: center;
+    gap: 5px;
+    width: 2.6rem; height: 2.6rem;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--rule);
+    cursor: pointer;
+  }
+  .burger summary::-webkit-details-marker { display: none; }
+  .burger__bar {
+    grid-area: 1 / 1;            /* both bars share one cell, so the X is exact */
+    width: 16px; height: 1.5px;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: transform var(--dur-2) var(--ease);
+  }
+  .burger__bar:first-of-type { transform: translateY(-3.5px); }
+  .burger__bar:last-of-type  { transform: translateY(3.5px); }
+  /* The two bars rotate into an X rather than vanishing. */
+  .burger[open] .burger__bar:first-of-type { transform: rotate(45deg); }
+  .burger[open] .burger__bar:last-of-type  { transform: rotate(-45deg); }
+
+  .burger__sheet {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.6rem);
+    min-width: 13rem;
+    padding: 0.6rem;
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-shell);
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    box-shadow: var(--lift-hi);
+  }
+  .burger__sheet ul { list-style: none; padding: 0; margin: 0 0 0.6rem; }
+  .burger__sheet ul a {
+    display: block;
+    padding: 0.65rem 0.8rem;
+    border-radius: var(--r-chip);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  .burger__sheet ul a:hover { background: var(--shell); }
+  .burger__sheet .btn { width: 100%; justify-content: space-between; }
+
+  .burger[open] .burger__sheet > ul > li,
+  .burger[open] .burger__sheet > .btn {
+    animation: sheet-in var(--dur-2) var(--ease-out) both;
+  }
+  .burger[open] .burger__sheet > ul > li:nth-child(1) { animation-delay: 30ms; }
+  .burger[open] .burger__sheet > ul > li:nth-child(2) { animation-delay: 70ms; }
+  .burger[open] .burger__sheet > ul > li:nth-child(3) { animation-delay: 110ms; }
+  .burger[open] .burger__sheet > ul > li:nth-child(4) { animation-delay: 150ms; }
+  .burger[open] .burger__sheet > .btn               { animation-delay: 190ms; }
+
+  @keyframes sheet-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @media (max-width: 860px) {
+    .rail__links, .rail__cta { display: none; }
+    .burger { display: block; }
+    .rail { height: 56px; padding-right: 0.42rem; }
+  }
+  /* The name fits comfortably down to very narrow phones; only drop it below that. */
+  @media (max-width: 330px) {
+    .rail__name { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .burger__bar { transition: none; }
+    .burger__sheet > ul > li, .burger__sheet > .btn { animation: none; }
+  }
+</style>

@@ -1,0 +1,153 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import PageHead from '@/components/PageHead.astro';
+import ProjectFeature from '@/components/ProjectFeature.astro';
+import Snippet from '@/components/Snippet.astro';
+import Icon from '@/components/Icon.astro';
+import TodoBanner from '@/components/TodoBanner.astro';
+import { projects } from '@/data/projects';
+import { fmtDate, isoDate } from '@/lib/url';
+
+const libs = projects.filter((p) => p.kind === 'library');
+const byName = new Map(projects.map((p) => [p.slug, p]));
+
+const notes = await Promise.all(
+  (await getCollection('notes'))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    .map(async (entry) => ({ entry, Body: (await render(entry)).Content })),
+);
+---
+
+<Base
+  title="Libraries"
+  description="Swift packages worth depending on, how to install them, and what changed lately."
+>
+  <TodoBanner />
+
+  <PageHead
+    kicker="Releases and announcements"
+    title="Code other people put in their projects."
+    lede="Installing someone else's package is a small act of trust. These pages say what each one does and how it does it."
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="libs">
+        {libs.map((p) => (
+          <div class="lib">
+            <ProjectFeature project={p} />
+            {p.install && (
+              <div class="lib__install">
+                {p.install.map((i) => <Snippet label={i.label} code={i.code} />)}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------- Release notes */}
+  <section class="section" id="notes">
+    <div class="wrap">
+      <h2 class="h2 notes__head">What changed lately</h2>
+
+      {notes.length > 0 ? (
+        <ol class="notes">
+          {notes.map(({ entry: n, Body }) => {
+            const proj = n.data.project ? byName.get(n.data.project) : undefined;
+            return (
+              <li class="note reveal">
+                <div class="note__meta">
+                  <time class="meta" datetime={isoDate(n.data.date)}>{fmtDate(n.data.date)}</time>
+                  {proj && <span class="meta note__proj">{proj.name}</span>}
+                  {n.data.version && <span class="meta note__ver">{n.data.version}</span>}
+                </div>
+                <div class="note__body">
+                  <h3 class="h3">{n.data.title}</h3>
+                  <div class="note__text"><Body /></div>
+                  {n.data.link && (
+                    <a class="link note__link" href={n.data.link} rel="noopener" target="_blank">
+                      Read the release
+                    </a>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <div class="empty plate">
+          <div class="plate__core empty__core">
+            <Icon name="pen-nib" size={26} />
+            <p class="empty__title">Nothing posted yet.</p>
+            <p class="empty__hint">
+              Release notes live in <code>src/content/notes/</code>. Copy
+              <code>_template.md</code> to a real filename, fill in the front matter,
+              and it appears here, newest first.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .libs { display: grid; gap: clamp(4rem, 7vw, 7rem); }
+  .lib { display: grid; gap: 2rem; }
+  .lib__install {
+    display: grid;
+    gap: 1rem;
+    max-width: 62ch;
+  }
+  .notes__head { margin-bottom: clamp(1.8rem, 3vw, 2.6rem); }
+
+  .notes { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule-soft); }
+  .note {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    gap: 1.5rem;
+    padding-block: 1.8rem;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .note__meta { display: grid; gap: 0.3rem; justify-items: start; padding-top: 0.2rem; }
+  .note__proj, .note__ver {
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-pill);
+    padding: 0.14rem 0.5rem;
+  }
+  .note__ver { color: var(--mark); border-color: var(--mark); }
+  .note__body { display: grid; gap: 0.6rem; justify-items: start; }
+  .note__text { color: var(--ink-2); font-size: var(--t-small); line-height: 1.68; max-width: 62ch; }
+  .note__text :global(p + p) { margin-top: 0.7em; }
+  .note__link { font-size: var(--t-small); }
+
+  @media (max-width: 700px) {
+    .note { grid-template-columns: 1fr; gap: 0.8rem; }
+    .note__meta { grid-auto-flow: column; justify-content: start; gap: 0.6rem; }
+  }
+
+  /* Empty state. It should read as "nothing here yet", not as a broken page. */
+  .empty { max-width: 46rem; }
+  .empty__core {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 0.6rem;
+    padding: clamp(2.5rem, 6vw, 4rem) 1.5rem;
+    background: var(--paper-sunk);
+    color: var(--ink-3);
+  }
+  .empty__title { font-size: 1.05rem; color: var(--ink); font-weight: 540; }
+  .empty__hint { font-size: var(--t-small); max-width: 46ch; line-height: 1.65; }
+  .empty__hint code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    color: var(--mark);
+    background: var(--mark-wash);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+  }
+</style>

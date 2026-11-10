@@ -1,0 +1,100 @@
+---
+import Base from '@/layouts/Base.astro';
+import Icon from '@/components/Icon.astro';
+import { fmtDate, isoDate, url } from '@/lib/url';
+import { site } from '@/data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  published: Date;
+  updated?: Date;
+  minutes: number;
+  tags: string[];
+  devto?: string;
+}
+const { title, description, published, updated, minutes, tags, devto } = Astro.props;
+---
+
+<Base title={title} description={description} type="article" publishedTime={isoDate(published)}>
+  <article class="article">
+    <header class="article__head wrap wrap--text">
+      <a class="article__back" href={url('/writing')}>
+        <Icon name="arrow-right" size={13} class="article__backicon" />
+        All writing
+      </a>
+
+      <h1 class="h1 article__title">{title}</h1>
+
+      <div class="article__meta">
+        <time class="meta" datetime={isoDate(published)}>{fmtDate(published)}</time>
+        <span class="meta">{minutes} min read</span>
+        {updated && <span class="meta">updated {fmtDate(updated)}</span>}
+      </div>
+
+      {tags.length > 0 && (
+        <ul class="article__tags">{tags.map((t) => <li>#{t}</li>)}</ul>
+      )}
+    </header>
+
+    <div class="wrap wrap--text">
+      <div class="prose">
+        <slot />
+      </div>
+
+      <footer class="article__foot">
+        <hr class="rule" />
+        <div class="article__footrow">
+          <p class="article__by">
+            Written by {site.name}.
+            {devto && (
+              <>
+                {' '}It is also on <a class="link" href={devto} rel="noopener" target="_blank">dev.to</a>.
+              </>
+            )}
+          </p>
+          <a class="btn" href={url('/writing')}>
+            More writing
+            <span class="btn__cap" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
+          </a>
+        </div>
+      </footer>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .article { padding-top: clamp(2rem, 1.5rem + 3vw, 3.5rem); }
+  .article__head { display: grid; justify-items: start; gap: 0.9rem; margin-bottom: 2.8rem; }
+
+  .article__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: var(--t-small);
+    color: var(--ink-3);
+    text-decoration: none;
+    margin-bottom: 0.6rem;
+  }
+  .article__back:hover { color: var(--mark); }
+  .article__backicon { transform: rotate(180deg); }
+
+  .article__title { max-width: 20ch; letter-spacing: -0.032em; }
+  .article__meta { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .article__tags {
+    display: flex; gap: 0.7rem; flex-wrap: wrap;
+    list-style: none; padding: 0; margin: 0;
+  }
+  .article__tags li { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-3); }
+
+  .article__foot { margin-top: 3.5rem; }
+  .article__foot .rule { margin-bottom: 1.8rem; }
+  .article__footrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .article__by { font-size: var(--t-small); color: var(--ink-2); }
+</style>

@@ -1,0 +1,181 @@
+---
+import Base from '@/layouts/Base.astro';
+import Chips from '@/components/Chips.astro';
+import Icon from '@/components/Icon.astro';
+import Socials from '@/components/Socials.astro';
+import TodoBanner from '@/components/TodoBanner.astro';
+import { about } from '@/data/about';
+import { skills } from '@/data/skills';
+import { site, resumeHref, resumeIsFile } from '@/data/site';
+import { url } from '@/lib/url';
+---
+
+<Base
+  title="About"
+  description="Who I am, what I am deep in, what I am curious about, and how to get hold of me."
+>
+  <TodoBanner />
+
+  {/* ------------------------------------------------- Portrait and story */}
+  <section class="intro">
+    <div class="wrap intro__grid">
+      <figure class="portrait plate">
+        <div class="plate__core portrait__core">
+          <img
+            src={url(site.avatar)}
+            alt={`${site.name}, smiling, against a plain wall`}
+            width="608" height="608" decoding="async" fetchpriority="high"
+          />
+        </div>
+      </figure>
+
+      <div class="intro__text">
+        <h1 class="h1 intro__title">I like knowing how the thing actually works.</h1>
+        {about.current && <p class="lede">{about.current}</p>}
+        {about.paragraphs.map((para) => <p class="intro__para">{para}</p>)}
+      </div>
+    </div>
+  </section>
+
+  {/* ---------------------------------------------------------- Résumé */}
+  <section class="section" id="resume">
+    <div class="wrap">
+      <div class="resume plate">
+        <div class="plate__core resume__core">
+          <div class="resume__left">
+            <h2 class="h2 resume__head">The short version</h2>
+            <ul class="resume__list">
+              {about.resumeLines.map((line) => (
+                <li>
+                  <Icon name="arrow-right" size={13} class="resume__tick" />
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="resume__right">
+            <a class="btn btn--solid resume__cta" href={url(resumeHref)} download={resumeIsFile || undefined}>
+              Résumé
+              <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
+            </a>
+            {!site.resumeReady && (
+              <p class="resume__pending">
+                The PDF is not published yet. Until it is, the fastest route is a
+                message on any of the links below, and I will send it over.
+              </p>
+            )}
+            <Socials />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------- Skills */}
+  <section class="section">
+    <div class="wrap">
+      <h2 class="h2 skills__head">What I can actually do</h2>
+      <div class="bands">
+        {skills.map((band) => (
+          <div class="band reveal">
+            <div class="band__label">
+              <h3 class="h3">{band.heading}</h3>
+              <p class="meta band__note">{band.note}</p>
+            </div>
+            <Chips items={band.items} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------ Hiring */}
+  <section class="section">
+    <div class="wrap">
+      <div class="hire">
+        <h2 class="h1 hire__head">If you are hiring, or know someone who is.</h2>
+        <p class="lede">
+          I am looking for work where the client is not an afterthought and
+          curiosity is not a distraction. A referral is worth as much as a role,
+          so pass this along if it fits someone you know.
+        </p>
+        <Socials primaryOnly />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .intro { padding-top: clamp(2.5rem, 1.5rem + 5vw, 5rem); }
+  .intro__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+  .portrait { margin: 0; position: sticky; top: 6rem; }
+  .portrait__core { padding: 6px; overflow: hidden; }
+  .portrait img {
+    width: 100%; height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: calc(var(--r-core) - 5px);
+  }
+  .intro__text { display: grid; gap: 1.2rem; max-width: var(--measure); }
+  .intro__title { max-width: 18ch; margin-bottom: 0.4rem; }
+  .intro__para { color: var(--ink-2); line-height: 1.72; }
+
+  @media (max-width: 880px) {
+    .intro__grid { grid-template-columns: 1fr; }
+    .portrait { position: static; max-width: 200px; }
+  }
+
+  /* --- Résumé card. The one place the hiring path is spelled out. ------- */
+  .resume__core {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    gap: clamp(1.8rem, 4vw, 3.5rem);
+    padding: clamp(1.6rem, 3.5vw, 2.8rem);
+    background: var(--paper-sunk);
+  }
+  .resume__head { margin-bottom: 1.2rem; }
+  .resume__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.7rem; }
+  .resume__list li {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: start;
+    font-size: var(--t-small);
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .resume__tick { color: var(--mark); margin-top: 0.28rem; }
+  .resume__right { display: grid; gap: 1rem; align-content: start; justify-items: start; }
+  .resume__cta { width: 100%; justify-content: space-between; }
+  .resume__pending { font-size: var(--t-small); color: var(--ink-3); line-height: 1.6; }
+
+  @media (max-width: 820px) {
+    .resume__core { grid-template-columns: 1fr; }
+  }
+
+  /* --- Skills bands ----------------------------------------------------- */
+  .skills__head { margin-bottom: clamp(1.8rem, 3vw, 2.6rem); }
+  .bands { display: grid; }
+  .band {
+    display: grid;
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    gap: clamp(1.25rem, 3vw, 3rem);
+    padding-block: clamp(1.5rem, 3vw, 2.4rem);
+    border-top: 1px solid var(--rule-soft);
+    align-items: start;
+  }
+  .band__note { margin-top: 0.4rem; line-height: 1.5; max-width: 30ch; }
+  @media (max-width: 760px) {
+    .band { grid-template-columns: 1fr; gap: 1rem; }
+  }
+
+  /* --- Hiring ----------------------------------------------------------- */
+  .hire { display: grid; gap: 1.3rem; justify-items: start; max-width: 60ch; }
+  .hire__head { letter-spacing: -0.034em; }
+</style>

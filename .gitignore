@@ -1,0 +1,11 @@
+dist/
+node_modules/
+.astro/
+
+# Keep .claude/launch.json (it is how the dev server starts), drop local settings.
+.claude/settings.local.json
+.claude/*.local.json
+.DS_Store
+npm-debug.log*
+.env
+.env.production

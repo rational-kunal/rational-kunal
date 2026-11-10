@@ -1,0 +1,42 @@
+---
+/**
+ * Development-only checklist. Never rendered in a build, so visitors never see
+ * it, but it is impossible to miss while working on the site.
+ */
+import { site, socials } from '@/data/site';
+
+const open: string[] = [];
+for (const s of socials) {
+  if (s.todo) open.push(`${s.label} URL is still "#" - set it in src/data/site.ts`);
+}
+if (!site.resumeReady) {
+  open.push('No résumé yet - drop the PDF at public/resume.pdf, then set resumeReady: true in src/data/site.ts');
+}
+const show = import.meta.env.DEV && open.length > 0;
+---
+
+{show && (
+  <aside class="todo" aria-label="Development checklist">
+    <strong class="todo__head">{open.length} thing{open.length === 1 ? '' : 's'} still to fill in</strong>
+    <ul>{open.map((t) => <li>{t}</li>)}</ul>
+    <p class="todo__foot">Only visible in <code>npm run dev</code>.</p>
+  </aside>
+)}
+
+<style>
+  .todo {
+    position: relative;
+    z-index: var(--z-overlay);
+    max-width: calc(var(--wide) - 2 * var(--gutter));
+    margin: 0.85rem var(--gutter) 0;
+    padding: 1rem 1.2rem;
+    border: 2px dashed var(--mark);
+    border-radius: var(--r-shell);
+    background: var(--mark-wash);
+    font-size: var(--t-small);
+  }
+  .todo__head { display: block; color: var(--mark); margin-bottom: 0.5rem; }
+  .todo ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.3rem; }
+  .todo__foot { margin-top: 0.6rem; color: var(--ink-3); font-size: var(--t-micro); }
+  .todo code { font-family: var(--font-mono); }
+</style>

@@ -1,0 +1,78 @@
+---
+/** A project given the full width: the story above, the drawing below. */
+import type { Project } from '@/data/projects';
+import { diagramFor, kindLabel } from '@/data/projects';
+import Diagram from './Diagram.astro';
+import Chips from './Chips.astro';
+import Stars from './Stars.astro';
+import Icon from './Icon.astro';
+import Shot from './Shot.astro';
+
+interface Props { project: Project; headingLevel?: 2 | 3; }
+const { project: p, headingLevel = 2 } = Astro.props;
+const H = `h${headingLevel}` as 'h2' | 'h3';
+const dg = diagramFor(p);
+---
+
+<article class="feature reveal">
+  <div class="feature__head">
+    <div class="feature__title">
+      <H class="h2">{p.name}</H>
+      <span class="meta feature__kind">{kindLabel[p.kind]}</span>
+      <Stars count={p.stars} />
+    </div>
+    <p class="feature__tag">{p.tagline}</p>
+    <p class="body-2 feature__what">{p.what}</p>
+    <Chips items={p.stack} class="feature__stack" />
+    <div class="feature__acts">
+      <a class="btn" href={p.repo} rel="noopener" target="_blank">
+        Source
+        <span class="btn__cap" aria-hidden="true"><Icon name="github-logo" size={13} /></span>
+      </a>
+      {p.demo && (
+        <a class="btn" href={p.demo} rel="noopener" target="_blank">
+          Try it
+          <span class="btn__cap" aria-hidden="true"><Icon name="arrow-up-right" size={13} /></span>
+        </a>
+      )}
+    </div>
+  </div>
+
+  <div class:list={['feature__visuals', { 'has-shot': !!p.shot }]}>
+    {p.shot && (
+      <Shot src={p.shot.src} dark={p.shot.dark} alt={p.shot.alt} fit="full" class="feature__shot" />
+    )}
+    {dg && <Diagram diagram={dg} title={`How ${p.name} works`} class="feature__fig" />}
+  </div>
+</article>
+
+<style>
+  .feature { display: grid; gap: 2rem; }
+  .feature__head { display: grid; gap: 0.9rem; max-width: 62ch; justify-items: start; }
+  .feature__title { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+  .feature__kind {
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-pill);
+    padding: 0.16rem 0.55rem;
+  }
+  .feature__tag {
+    font-size: clamp(1.05rem, 0.98rem + 0.4vw, 1.2rem);
+    color: var(--ink);
+    letter-spacing: -0.015em;
+  }
+  .feature__what { line-height: 1.68; }
+  .feature__stack { margin-top: 0.15rem; }
+  .feature__acts { display: flex; gap: 0.55rem; flex-wrap: wrap; margin-top: 0.4rem; }
+
+  /* The screenshot proves it is real; the drawing says how. Side by side when
+     there is room, stacked when there is not. */
+  .feature__visuals { display: grid; gap: 1.5rem; }
+  .feature__visuals.has-shot {
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    align-items: start;
+  }
+  @media (max-width: 920px) {
+    .feature__visuals.has-shot { grid-template-columns: 1fr; }
+    .feature__shot { max-width: 260px; }
+  }
+</style>

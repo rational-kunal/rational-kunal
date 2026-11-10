@@ -1,0 +1,93 @@
+---
+import { site, nav } from '@/data/site';
+import { url } from '@/lib/url';
+import Socials from './Socials.astro';
+import Icon from './Icon.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <hr class="rule" />
+    <div class="foot">
+      <div class="foot__lead">
+        <p class="foot__line">
+          Open to work that needs depth on the client and curiosity everywhere else.
+        </p>
+        <Socials primaryOnly />
+      </div>
+
+      <nav class="foot__nav" aria-label="Footer">
+        <ul>
+          {nav.map((i) => <li><a href={url(i.href)}>{i.label}</a></li>)}
+          <li><a href={url('/rss.xml')}>RSS</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="foot__base">
+      <span class="meta">{site.name} &middot; {year}</span>
+      <a class="meta foot__src" href="https://github.com/rational-kunal" rel="noopener">
+        Built in the open
+        <Icon name="arrow-up-right" size={11} />
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { padding-bottom: 3rem; }
+  .rule { margin-bottom: 2.5rem; }
+
+  .foot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .foot__lead { display: grid; gap: 1.1rem; justify-items: start; }
+  .foot__line {
+    font-size: clamp(1.1rem, 1rem + 0.9vw, 1.5rem);
+    letter-spacing: -0.022em;
+    max-width: 22ch;
+    line-height: 1.3;
+  }
+
+  .foot__nav ul {
+    display: grid;
+    gap: 0.35rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .foot__nav a {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  .foot__nav a:hover { color: var(--mark); }
+
+  .foot__base {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .foot__src {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    text-decoration: none;
+  }
+  .foot__src:hover { color: var(--mark); }
+
+  @media (max-width: 620px) {
+    .foot { grid-template-columns: 1fr; gap: 2rem; }
+    .foot__nav ul { grid-template-columns: 1fr 1fr; }
+  }
+</style>

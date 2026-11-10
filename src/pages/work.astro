@@ -1,0 +1,59 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHead from '@/components/PageHead.astro';
+import ProjectFeature from '@/components/ProjectFeature.astro';
+import ProjectTile from '@/components/ProjectTile.astro';
+import TodoBanner from '@/components/TodoBanner.astro';
+import { projects } from '@/data/projects';
+
+/* Anything with a drawing earns the full width. Everything else is a tile,
+   so the page stays a page rather than turning into a list of fourteen rows. */
+const drawn = projects.filter((p) => p.diagram && p.kind !== 'library');
+const rest = projects.filter((p) => !drawn.includes(p) && p.kind !== 'library');
+---
+
+<Base
+  title="Work"
+  description="Apps, tools and experiments, each with a drawing of how it actually works."
+>
+  <TodoBanner />
+
+  <PageHead
+    title="Every one of these started as a question."
+    lede="Some became apps, some stayed experiments. The ones worth explaining have a drawing under them."
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="drawn">
+        {drawn.map((p) => <ProjectFeature project={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2 class="h2 rest__head">Smaller things, still mine.</h2>
+      <div class="grid">
+        {rest.map((p) => <ProjectTile project={p} span={4} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .drawn { display: grid; gap: clamp(4rem, 7vw, 7rem); }
+  .rest__head { margin-bottom: clamp(1.8rem, 3vw, 2.6rem); max-width: 22ch; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(0.85rem, 1.6vw, 1.25rem);
+  }
+  @media (max-width: 1040px) {
+    .grid :global(.tile) { grid-column: span 6; }
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; }
+    .grid :global(.tile) { grid-column: 1 / -1; }
+  }
+</style>

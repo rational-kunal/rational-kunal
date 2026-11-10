@@ -1,0 +1,73 @@
+---
+/**
+ * The compact cousin of Diagram: three boxes and two arrows, drawn large
+ * enough to stay readable inside a card. Used when a project has no
+ * screenshot and a full diagram would be unreadable at this size.
+ */
+import { roughRect, roughArrow } from '@/lib/rough';
+
+interface Props { steps: readonly [string, string, string]; seed?: number; }
+const { steps, seed = 31 } = Astro.props;
+
+const W = 360, H = 86;
+const BOX = { w: 100, h: 48, y: 19 };
+const xs = [4, 130, 256];
+
+let s = seed * 7919;
+const next = () => (s = (s * 1103515245 + 12345) % 2147483647);
+
+const boxes = xs.map((x) => roughRect(x, BOX.y, BOX.w, BOX.h, next(), { wobble: 1.7 }));
+const arrows = [
+  roughArrow(xs[0] + BOX.w + 3, BOX.y + BOX.h / 2, xs[1] - 4, BOX.y + BOX.h / 2, next(), { wobble: 0.8 }),
+  roughArrow(xs[1] + BOX.w + 3, BOX.y + BOX.h / 2, xs[2] - 4, BOX.y + BOX.h / 2, next(), { wobble: 0.8 }),
+];
+
+/** Break a label onto a second line rather than letting it run past the box. */
+function wrap(label: string): string[] {
+  if (label.length <= 11) return [label];
+  const words = label.split(' ');
+  if (words.length === 1) return [label];
+  const out = ['', ''];
+  for (const w of words) {
+    const i = out[0].length && (out[0] + ' ' + w).length > 11 ? 1 : 0;
+    out[i] = out[i] ? `${out[i]} ${w}` : w;
+  }
+  return out.filter(Boolean);
+}
+const lines = steps.map(wrap);
+---
+
+<svg
+  class="diagram mini"
+  viewBox={`0 0 ${W} ${H}`}
+  role="img"
+  aria-label={`${steps[0]}, then ${steps[1]}, then ${steps[2]}.`}
+  preserveAspectRatio="xMidYMid meet"
+>
+  {xs.map((x) => (
+    <rect x={x} y={BOX.y} width={BOX.w} height={BOX.h} rx="4" class="d-fill" />
+  ))}
+  {boxes.map((d, i) => (
+    <path d={d} class={i === 1 ? 'd-mark' : 'd-stroke'} stroke-width={i === 1 ? 1.8 : 1.5} />
+  ))}
+  {arrows.map((d) => <path d={d} class="d-stroke" stroke-width="1.4" />)}
+  {xs.map((x, i) => {
+    const cx = x + BOX.w / 2;
+    const ls = lines[i];
+    const top = BOX.y + BOX.h / 2 + (ls.length === 1 ? 4.5 : -2);
+    return ls.map((line, k) => (
+      <text
+        x={cx}
+        y={top + k * 13}
+        class={`mini__label${i === 1 ? ' d-accent-text' : ''}`}
+        text-anchor="middle"
+      >{line}</text>
+    ));
+  })}
+</svg>
+
+<style>
+  .mini { width: 100%; height: auto; }
+  .mini :global(.mini__label) { font-size: 12.5px; font-weight: 500; fill: var(--ink); }
+  .mini :global(.d-accent-text) { fill: var(--mark); }
+</style>
