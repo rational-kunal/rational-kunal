@@ -25,6 +25,13 @@ example `/resume.pdf`) downloads instead.
 `false`, the hero kicker, the "If you are hiring" block in About and the
 footer line are all left out.
 
+Analytics is the `analytics` field in the same file: a Google Tag Manager
+container ID (`'GTM-XXXXXXXX'`), currently `GTM-M33F7SNJ`. Every page gets
+the tag; set it to `null` and none do. GA4 and anything else that should run
+is configured inside the container in Tag Manager, not in this repo. The tag
+is only added to production builds, so `npm run dev` never sends a visit. It
+is the one script the site loads, and it is Google's, not ours.
+
 One more worth a look: `src/data/about.ts` has a `current` field for a single
 sentence about where you work right now. It is `null`, so the paragraph is
 simply left out rather than invented.

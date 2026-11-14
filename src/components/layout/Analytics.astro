@@ -1,0 +1,24 @@
+---
+/**
+ * Google Tag Manager. Renders nothing until `site.analytics` holds a container
+ * ID, and nothing in `npm run dev`, so local visits never count. What the
+ * container does (GA4 and anything else) is set up in GTM, not here.
+ * Both scripts are inline and third-party: Astro bundles none of it.
+ */
+import { site } from '@/data/site';
+
+const id = import.meta.env.PROD ? site.analytics : null;
+---
+
+{
+  id && (
+    <>
+      <script is:inline async src={`https://www.googletagmanager.com/gtm.js?id=${id}`} />
+      <script is:inline>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+      </script>
+    </>
+  )
+}

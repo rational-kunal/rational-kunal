@@ -17,6 +17,11 @@ export const site = {
   /* Temporarily off. Flip to `true` to bring back "open to new roles" in the
      hero, the "If you are hiring" block in About, and the footer line. */
   openToWork: false,
+  /* Google Tag Manager container ID, like 'GTM-XXXXXXXX'. GA4 is set up inside
+     the container. `null` leaves the tag out of every page. It is public (it
+     ships in the HTML), so it lives here rather than in a secret. Only
+     production builds include it. */
+  analytics: 'GTM-M33F7SNJ' as string | null,
   avatar: '/kunal.jpg',
   mark: '/mark.png',
 } as const;

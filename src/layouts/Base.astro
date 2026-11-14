@@ -6,6 +6,7 @@ import '@/styles/global.css';
 
 import Nav from '@/components/layout/Nav.astro';
 import Footer from '@/components/layout/Footer.astro';
+import Analytics from '@/components/layout/Analytics.astro';
 import { site } from '@/data/site';
 import { absolute, url } from '@/lib/url';
 
@@ -72,6 +73,7 @@ const ogImage = absolute(image);
     <meta name="color-scheme" content="dark" />
     <meta name="generator" content={Astro.generator} />
     {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <Analytics />
   </head>
 
   <body>
