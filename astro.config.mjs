@@ -11,9 +11,13 @@ import { rehypeImageDims } from './src/lib/images.ts';
 //
 //   Project page (repo named e.g. `portfolio`)
 //     site: 'https://rational-kunal.github.io'   base: '/portfolio'
+//
+//   Custom domain (current) — served from the root of rationalkunal.in,
+//   with public/CNAME holding the domain.
+//     site: 'https://rationalkunal.in'           base: '/'
 // ---------------------------------------------------------------------------
-const SITE = 'https://rational-kunal.github.io';
-const BASE = '/rational-kunal';
+const SITE = 'https://rationalkunal.in';
+const BASE = '/';
 
 export default defineConfig({
   site: SITE,

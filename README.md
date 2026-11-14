@@ -185,25 +185,31 @@ curl -s "https://api.github.com/users/rational-kunal/repos?per_page=100" \
 In the repository settings, set **Pages -> Build and deployment -> Source** to
 **GitHub Actions** once, and that is the whole setup.
 
-The site is configured as a **project page**: the repository is
-`rational-kunal/rational-kunal`, so it is served at
-`https://rational-kunal.github.io/rational-kunal/`. Both values live at the top
-of `astro.config.mjs`:
+The site is served from the custom domain **rationalkunal.in** (registered at
+GoDaddy, hosted on GitHub Pages). Both values live at the top of
+`astro.config.mjs`:
 
 ```js
-const SITE = 'https://rational-kunal.github.io';
-const BASE = '/rational-kunal';
+const SITE = 'https://rationalkunal.in';
+const BASE = '/';
 ```
 
 Every internal link runs through `url()` in `src/lib/url.ts`, and the image
 paths inside articles are prefixed by `rehypeImageDims` in `src/lib/images.ts`,
-so `BASE` is the only thing to change.
+so `BASE` is the only thing to change when the hosting target does.
 
-For a **user page** (a repository named `rational-kunal.github.io`), set `BASE`
-back to `'/'`.
+`public/CNAME` holds the domain. The DNS side is, at GoDaddy, four `A` records
+for `@` pointing at GitHub Pages (`185.199.108.153`, `.109.153`, `.110.153`,
+`.111.153`) and a `CNAME` for `www` pointing at `rational-kunal.github.io`. In
+the repository, **Settings -> Pages -> Custom domain** is set to
+`rationalkunal.in` with **Enforce HTTPS** on.
 
-For a custom domain, set `SITE` to it, leave `BASE` as `'/'`, and add a
-`public/CNAME` file containing the domain.
+To go back to the default URL, set `SITE` to `https://rational-kunal.github.io`
+and `BASE` to `'/rational-kunal'` (the repository name), and remove the custom
+domain in Pages settings.
+
+For a **user page** (a repository named `rational-kunal.github.io`), `BASE` is
+`'/'` and `SITE` is `https://rational-kunal.github.io`.
 
 ---
 
