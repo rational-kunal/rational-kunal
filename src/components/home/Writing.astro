@@ -1,0 +1,87 @@
+---
+/**
+ * Every article, newest first, grouped under the year it came out. The year
+ * sits in its own column and stays in view while its articles scroll past, so
+ * the rows only carry the day. The articles themselves live at /writing/<slug>.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import ArticleRow from './ArticleRow.astro';
+import { getPosts, type Post } from '@/lib/content';
+import { url } from '@/lib/url';
+
+// Posts are newest first, so the years come out in order too.
+const years = new Map<number, Post[]>();
+for (const post of await getPosts()) {
+  const y = post.data.published.getUTCFullYear();
+  years.set(y, [...(years.get(y) ?? []), post]);
+}
+---
+
+<section class="section writing" id="writing">
+  <div class="wrap">
+    <div class="sec__head">
+      <div class="sec__title">
+        <h2 class="h2">Writing</h2>
+        <p class="lede sec__lede">
+          Things I worked out, written down. Mostly Swift and iOS, occasionally a
+          browser or a terminal. Short, with real code and no preamble.
+        </p>
+      </div>
+      <a class="btn" href={url('/rss.xml')}>
+        Subscribe
+        <span class="btn__cap" aria-hidden="true"><Icon name="rss-simple" size={13} /></span>
+      </a>
+    </div>
+
+    {[...years].map(([year, list]) => (
+      <section class="year" aria-labelledby={`y${year}`}>
+        <h3 class="year__label" id={`y${year}`}>{year}</h3>
+        <ul class="year__list">
+          {list.map((post) => <li class="reveal"><ArticleRow post={post} /></li>)}
+        </ul>
+      </section>
+    ))}
+  </div>
+</section>
+
+<style>
+  .sec__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.25rem 2rem;
+    margin-bottom: clamp(1.6rem, 3vw, 2.4rem);
+  }
+  .sec__title { display: grid; gap: 0.8rem; }
+  .sec__lede { max-width: 48ch; margin: 0; }
+
+  /* One line per year, none between articles. */
+  .year {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 1.5rem;
+    padding-block: 0.6rem 1.4rem;
+    border-top: 1px solid var(--rule);
+  }
+  /* Level with the first title, and held under the nav while its year scrolls. */
+  .year__label {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+    padding-top: 0.95rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 1rem + 0.45vw, 1.3rem);
+    font-weight: 560;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .year__list { list-style: none; margin: 0; padding: 0; }
+
+  @media (max-width: 720px) {
+    .year { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 1rem; }
+    .year__label { position: static; padding-top: 0; }
+  }
+</style>

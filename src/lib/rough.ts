@@ -22,6 +22,15 @@ function prng(seed: number): () => number {
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 
+/**
+ * A stream of seeds from one, so a drawing made of many strokes is still
+ * decided by a single number and redraws the same on every build.
+ */
+export function seeds(seed: number): () => number {
+  let s = seed;
+  return () => (s = (s * 1103515245 + 12345) % 2147483647);
+}
+
 export type Pen = {
   /** How far the stroke is allowed to wander, in user units. */
   wobble?: number;
@@ -84,35 +93,6 @@ export function roughRect(
     out.push(bowedLine(x + w, y - over(), x + w, y + h + over(), rand, wobble));
     out.push(bowedLine(x + w + over(), y + h, x - over(), y + h, rand, wobble));
     out.push(bowedLine(x, y + h + over(), x, y - over(), rand, wobble));
-  }
-  return out.join(' ');
-}
-
-export function roughEllipse(
-  cx: number, cy: number, rx: number, ry: number,
-  seed: number, pen: Pen = {},
-): string {
-  const { wobble = 1.6, passes = 2 } = pen;
-  const rand = prng(seed);
-  const out: string[] = [];
-  const steps = 10;
-
-  for (let i = 0; i < passes; i++) {
-    // Start at a different angle each pass so the seam is not stacked.
-    const start = rand() * Math.PI * 2;
-    const pts: Array<[number, number]> = [];
-    for (let k = 0; k <= steps; k++) {
-      const a = start + (k / steps) * Math.PI * 2;
-      const j = (rand() * 2 - 1) * wobble;
-      pts.push([cx + Math.cos(a) * (rx + j), cy + Math.sin(a) * (ry + j)]);
-    }
-    let d = `M${r2(pts[0][0])} ${r2(pts[0][1])}`;
-    for (let k = 1; k < pts.length; k++) {
-      const [px, py] = pts[k - 1];
-      const [qx, qy] = pts[k];
-      d += ` Q${r2((px + qx) / 2 + (rand() * 2 - 1) * wobble)} ${r2((py + qy) / 2 + (rand() * 2 - 1) * wobble)} ${r2(qx)} ${r2(qy)}`;
-    }
-    out.push(d);
   }
   return out.join(' ');
 }

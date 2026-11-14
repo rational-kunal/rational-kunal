@@ -1,0 +1,45 @@
+---
+/**
+ * A real screenshot from the project's own repository, in one hairline.
+ *
+ * The site is dark only, so a shot with a `dark` variant always shows it.
+ * The real size is read from the file at build time, so the browser reserves
+ * the space before it loads, and the figure is marked tall (a phone) or wide
+ * (a window) for layouts that size the two differently. `still` replaces an
+ * animated src (a GIF) for visitors who ask for less motion.
+ */
+import { imageSize } from '@/lib/images';
+import { url } from '@/lib/url';
+
+interface Props {
+  src: string;
+  dark?: string;
+  still?: string;
+  alt: string;
+  class?: string;
+}
+const { src, dark, still, alt, class: klass } = Astro.props;
+
+const shown = dark ?? src;
+const size = imageSize(shown);
+const shape = size && size.w > size.h ? 'wide' : 'tall';
+---
+
+<figure class:list={['shotfig', `shotfig--${shape}`, klass]}>
+  <picture>
+    {still && <source media="(prefers-reduced-motion: reduce)" srcset={url(still)} />}
+    <img src={url(shown)} alt={alt} width={size?.w} height={size?.h} loading="lazy" decoding="async" />
+  </picture>
+</figure>
+
+<style>
+  .shotfig { margin: 0; }
+  .shotfig picture { display: block; }
+  .shotfig img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-chip);
+  }
+</style>

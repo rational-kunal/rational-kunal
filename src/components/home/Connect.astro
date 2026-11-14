@@ -1,0 +1,122 @@
+---
+/**
+ * "Find me": one button that fans the social links out when pressed, so six
+ * of them never have to sit on the page at once. It lives in the hero, next to
+ * the Résumé button.
+ *
+ * Built on the HTML Popover API, so it costs no JavaScript and still gets the
+ * things a menu needs for free: Esc closes it, a click anywhere else closes
+ * it, and focus goes back to the button. The list comes from `socials` in
+ * src/data/site.ts, in that order, top to bottom.
+ *
+ * Where the browser has CSS anchor positioning the list hangs under the
+ * button. Where it does not, it is centred in the viewport instead, which is
+ * still a perfectly good menu. Only one of these can be on a page (fixed id).
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { socials } from '@/data/site';
+import { external } from '@/lib/url';
+---
+
+<button class="btn connect__trigger" type="button" popovertarget="connect-menu">
+  Find me
+  <span class="btn__cap" aria-hidden="true"><Icon name="plus" size={13} /></span>
+</button>
+
+<div id="connect-menu" class="connect" popover aria-label="Find me elsewhere">
+  <ul class="connect__list">
+    {socials.map((s, i) => (
+      <li style={`--i:${i}`}>
+        <a class="btn connect__btn" href={s.href} {...external(s.href, 'me noopener')}>
+          <span>{s.label}{s.old && <>{' '}<small class="connect__old">old</small></>}</span>
+          <span class="btn__cap" aria-hidden="true">
+            <Icon name={s.icon} brand={s.brand} size={13} />
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  /* A browser too old for popovers would render the list as plain content,
+     so it gets neither the button nor the list. The footer still has the links. */
+  @supports not selector(:popover-open) {
+    .connect__trigger, .connect { display: none; }
+  }
+
+  /* While open, the plus turns into a cross, and the button stays pressed. */
+  .connect__trigger:has(+ .connect:popover-open) {
+    background: var(--shell);
+    border-color: var(--rule);
+  }
+  .connect__trigger:has(+ .connect:popover-open) :global(.btn__cap svg) {
+    transform: rotate(45deg);
+  }
+
+  /* --- The fan ---------------------------------------------------------- */
+  /* The UA draws a popover as a bordered, padded box centred in the viewport.
+     Strip the box: the pills are the visuals, there is no card behind them.
+     The centring stays, because it is the fallback position. */
+  .connect {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    overflow: visible;
+    width: max-content;
+  }
+  /* Where there is anchor positioning, hang it under the button, left edges
+     flush, and flip above the button when there is no room below. */
+  @supports (anchor-name: --a) {
+    .connect__trigger { anchor-name: --find-me; }
+    .connect {
+      inset: auto;
+      margin: 0;
+      position-anchor: --find-me;
+      top: calc(anchor(bottom) + 0.55rem);
+      left: anchor(left);
+      position-try-fallbacks: flip-block;
+    }
+  }
+
+  .connect__list {
+    display: grid;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Each pill is opaque, because it floats over the page. They share one width
+     so the list reads as a tidy column. */
+  .connect__list .connect__btn {
+    --btn-bg: var(--paper);
+    --btn-hover-bg: color-mix(in srgb, var(--paper) 93%, var(--ink));
+    box-shadow: var(--lift-hi);
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .connect__old {
+    margin-left: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: var(--t-micro);
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+
+  /* They pop out of the button one after another, top to bottom. */
+  .connect:popover-open .connect__list li {
+    transform-origin: top left;
+    animation: fan-in var(--dur-2) var(--ease-out) both;
+    animation-delay: calc(var(--i) * 45ms);
+  }
+  @keyframes fan-in {
+    from { opacity: 0; transform: translateY(-10px) scale(0.92); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .connect:popover-open .connect__list li { animation: none; }
+  }
+</style>

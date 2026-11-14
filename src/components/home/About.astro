@@ -1,0 +1,75 @@
+---
+/** Who I am, and the hiring note while openToWork is on. The last section of the page. */
+import Socials from '@/components/ui/Socials.astro';
+import { about } from '@/data/about';
+import { site } from '@/data/site';
+import { url } from '@/lib/url';
+---
+
+{/* ------------------------------------------------- Portrait and story */}
+<section class="intro" id="about">
+  <div class="wrap intro__grid">
+    <figure class="portrait plate">
+      <div class="plate__core portrait__core">
+        <img
+          src={url(site.avatar)}
+          alt={`${site.name}, smiling, against a plain wall`}
+          width="608" height="608" decoding="async" loading="lazy"
+        />
+      </div>
+    </figure>
+
+    <div class="intro__text">
+      <h2 class="h2 intro__title">I like knowing how the thing actually works.</h2>
+      {about.current && <p class="lede">{about.current}</p>}
+      {about.paragraphs.map((para) => <p class="intro__para">{para}</p>)}
+    </div>
+  </div>
+</section>
+
+{/* --------------------------------------- Hiring (only while openToWork) */}
+{site.openToWork && (
+  <section class="section">
+    <div class="wrap">
+      <div class="hire">
+        <h2 class="h2 hire__head">If you are hiring, or know someone who is.</h2>
+        <p class="lede">
+          I am looking for work where the client is not an afterthought and
+          curiosity is not a distraction. A referral is worth as much as a role,
+          so pass this along if it fits someone you know.
+        </p>
+        <Socials primaryOnly />
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .intro { padding-top: clamp(1rem, 3vw, 2rem); padding-bottom: clamp(2rem, 4vw, 3rem); }
+  .intro__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+  .portrait { margin: 0; position: sticky; top: 6rem; }
+  .portrait__core { padding: 6px; overflow: hidden; }
+  .portrait img {
+    width: 100%; height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: calc(var(--r-core) - 5px);
+  }
+  .intro__text { display: grid; gap: 1.2rem; max-width: var(--measure); }
+  .intro__title { max-width: 18ch; margin-bottom: 0.4rem; }
+  .intro__para { color: var(--ink-2); line-height: 1.72; }
+
+  @media (max-width: 880px) {
+    .intro__grid { grid-template-columns: 1fr; }
+    .portrait { position: static; max-width: 200px; }
+  }
+
+  /* --- Hiring ----------------------------------------------------------- */
+  .hire { display: grid; gap: 1.3rem; justify-items: start; max-width: 60ch; }
+  .hire__head { letter-spacing: -0.034em; }
+</style>

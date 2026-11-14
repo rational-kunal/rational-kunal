@@ -1,0 +1,104 @@
+---
+/**
+ * One article in the Writing list: the title and its one-line pitch, with the
+ * day and the reading time to the right. The year is the list's job, so it is
+ * not repeated here.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { minutesOf, type Post } from '@/lib/content';
+import { fmtDay, isoDate } from '@/lib/dates';
+import { url } from '@/lib/url';
+
+interface Props { post: Post; }
+const { post } = Astro.props;
+const { title, description, published } = post.data;
+---
+
+<a class="row" href={url(`/writing/${post.id}`)}>
+  <h4 class="row__title">
+    {title}<span class="row__go" aria-hidden="true"><Icon name="arrow-right" size={15} /></span>
+  </h4>
+  <p class="row__desc">{description}</p>
+  <p class="row__meta">
+    <time class="meta" datetime={isoDate(published)}>{fmtDay(published)}</time>
+    <span class="meta">{minutesOf(post)} min</span>
+  </p>
+</a>
+
+<style>
+  /* The tile bleeds 0.9rem past the column on each side, so on hover the text
+     stays where it was and the fill wraps around it. */
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 2rem;
+    padding: 0.95rem 0.9rem 1.05rem;
+    margin-inline: -0.9rem;
+    border-radius: var(--r-core);
+    color: inherit;
+    text-decoration: none;
+    transition: background var(--dur-1) var(--ease);
+  }
+  .row:hover, .row:focus-visible { background: var(--shell); }
+
+  .row__title, .row__desc { grid-column: 1; }
+  .row__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 1rem + 0.45vw, 1.3rem);
+    font-weight: 560;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--ink);
+    transition: color var(--dur-1) var(--ease);
+  }
+  .row__desc {
+    margin-top: 0.3rem;
+    max-width: 62ch;
+    color: var(--ink-2);
+    font-size: var(--t-small);
+    line-height: 1.6;
+  }
+
+  /* Day over minutes, right-aligned, so the eye can run down the dates. */
+  .row__meta {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: grid;
+    justify-items: end;
+    align-content: start;
+    gap: 0.2rem;
+    padding-top: 0.32rem;
+    white-space: nowrap;
+  }
+
+  /* The arrow arrives with the hover, so a row at rest is only words. */
+  .row__go {
+    display: inline-block;
+    margin-left: 0.4rem;
+    vertical-align: -0.1em;
+    color: var(--mark);
+    opacity: 0;
+    transition: opacity var(--dur-1) var(--ease), transform var(--dur-2) var(--ease-out);
+  }
+  .row:hover .row__title, .row:focus-visible .row__title { color: var(--mark); }
+  .row:hover .row__go, .row:focus-visible .row__go { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .row__go { transform: translateX(-4px); }
+    .row:hover .row__go, .row:focus-visible .row__go { transform: none; }
+  }
+
+  @media (max-width: 720px) {
+    .row { grid-template-columns: minmax(0, 1fr); }
+    .row__meta {
+      grid-column: 1;
+      grid-row: auto;
+      grid-auto-flow: column;
+      justify-content: start;
+      gap: 1rem;
+      padding-top: 0.5rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .row, .row__title, .row__go { transition: none; }
+  }
+</style>

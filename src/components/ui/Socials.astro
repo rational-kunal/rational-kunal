@@ -1,0 +1,66 @@
+---
+/** The social links from src/data/site.ts, as a row of round icons. */
+import { socials } from '@/data/site';
+import { external } from '@/lib/url';
+import Icon from './Icon.astro';
+
+interface Props {
+  /** Only the links marked `primary`. */
+  primaryOnly?: boolean;
+  size?: number;
+  /** Show each name beside its icon. The footer uses this, so the last thing
+      on the page says where to reach me in words, not six bare glyphs. */
+  labelled?: boolean;
+}
+const { primaryOnly = false, size = 18, labelled = false } = Astro.props;
+
+const list = primaryOnly ? socials.filter((s) => s.primary) : socials;
+---
+
+<ul class:list={['socials', { 'socials--labelled': labelled }]}>
+  {list.map((s) => (
+    <li>
+      <a class="socials__item" href={s.href} {...external(s.href, 'me noopener')}>
+        <Icon name={s.icon} brand={s.brand} size={s.brand ? size * 0.8 : size} />
+        <span class:list={[{ 'visually-hidden': !labelled }]}>{s.label}</span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .socials { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin: 0; }
+  .socials__item {
+    display: grid;
+    place-items: center;
+    width: 2.35rem; height: 2.35rem;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--rule-soft);
+    color: var(--ink-2);
+    transition:
+      color var(--dur-1) var(--ease),
+      border-color var(--dur-1) var(--ease),
+      background var(--dur-1) var(--ease),
+      transform var(--dur-1) var(--ease);
+  }
+  .socials__item:hover {
+    color: var(--mark);
+    border-color: var(--rule);
+    background: var(--mark-wash);
+    transform: translateY(-2px);
+  }
+  .socials--labelled { gap: 0.5rem; }
+  .socials--labelled .socials__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: auto;
+    padding: 0 0.95rem 0 0.75rem;
+    font-size: var(--t-small);
+    text-decoration: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .socials__item { transition: none; }
+    .socials__item:hover { transform: none; }
+  }
+</style>

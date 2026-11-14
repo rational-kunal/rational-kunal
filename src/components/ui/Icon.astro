@@ -1,26 +1,21 @@
 ---
 /**
  * Icons are read out of the installed packages at build time and inlined.
- * Nothing is drawn by hand here, and no icon font or runtime is shipped.
+ * No icon font and no runtime are shipped.
  *
- * Family: Phosphor Light for everything, including the social logos, so the
- * stroke weight stays consistent. Simple Icons is used only for `devdotto`,
- * which Phosphor does not carry.
+ * Phosphor Light for everything it carries, so the stroke weight stays
+ * consistent. `brand` pulls a logo from Simple Icons instead, for the ones
+ * Phosphor does not have (dev.to, Codeforces, most of the skills).
  */
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 
-const require = createRequire(import.meta.url);
-
 interface Props {
   name: string;
-  /** Pull from Simple Icons instead of Phosphor. Only needed for dev.to. */
   brand?: boolean;
-  size?: number | string;
-  class?: string;
+  size?: number;
 }
-
-const { name, brand = false, size = 18, class: cls = '' } = Astro.props;
+const { name, brand = false, size = 18 } = Astro.props;
 
 const spec = brand
   ? `simple-icons/icons/${name}.svg`
@@ -28,13 +23,13 @@ const spec = brand
 
 let file: string;
 try {
-  file = require.resolve(spec);
+  file = createRequire(import.meta.url).resolve(spec);
 } catch {
   throw new Error(
     `Icon "${name}" not found. Expected ${spec}. ` +
-    (brand
-      ? 'Check the slug at simple-icons.org.'
-      : 'Check the name at phosphoricons.com (the "-light" suffix is added for you).'),
+      (brand
+        ? 'Check the slug at simpleicons.org.'
+        : 'Check the name at phosphoricons.com (the "-light" suffix is added for you).'),
   );
 }
 
@@ -47,7 +42,7 @@ const inner = raw
 ---
 
 <svg
-  class={cls}
+  data-icon={name}
   width={size}
   height={size}
   viewBox={viewBox}

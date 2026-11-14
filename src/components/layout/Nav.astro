@@ -1,32 +1,23 @@
 ---
-import { nav, site, resumeHref, resumeIsFile } from '@/data/site';
+import { nav, site, resumeAttrs } from '@/data/site';
 import { url } from '@/lib/url';
-import Icon from './Icon.astro';
-
-const here = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isOn = (href: string) => here === url(href).replace(/\/$/, '');
+import Icon from '@/components/ui/Icon.astro';
 ---
 
 <header class="site-nav">
   <nav class="rail" aria-label="Primary">
     <a class="rail__home" href={url('/')} aria-label={`${site.name}, home`}>
-      <span class="rail__mono" aria-hidden="true">kk</span>
+      <img class="rail__mono" src={url(site.mark)} alt="" width="30" height="30" />
       <span class="rail__name">{site.name}</span>
     </a>
 
     <ul class="rail__links">
       {nav.map((item) => (
-        <li>
-          <a
-            href={url(item.href)}
-            class:list={['rail__link', { 'is-on': isOn(item.href) }]}
-            aria-current={isOn(item.href) ? 'page' : undefined}
-          >{item.label}</a>
-        </li>
+        <li><a class="rail__link" href={url(item.href)}>{item.label}</a></li>
       ))}
     </ul>
 
-    <a class="btn btn--solid rail__cta" href={url(resumeHref)} download={resumeIsFile || undefined}>
+    <a class="btn btn--solid rail__cta" href={url(site.resume)} {...resumeAttrs}>
       Résumé
       <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
     </a>
@@ -41,7 +32,7 @@ const isOn = (href: string) => here === url(href).replace(/\/$/, '');
         <ul>
           {nav.map((item) => <li><a href={url(item.href)}>{item.label}</a></li>)}
         </ul>
-        <a class="btn btn--solid" href={url(resumeHref)} download={resumeIsFile || undefined}>
+        <a class="btn btn--solid" href={url(site.resume)} {...resumeAttrs}>
           Résumé
           <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
         </a>
@@ -89,17 +80,35 @@ const isOn = (href: string) => here === url(href).replace(/\/$/, '');
     margin-right: auto;
   }
   .rail__mono {
-    display: grid;
-    place-items: center;
-    width: 1.9rem; height: 1.9rem;
+    width: 2rem; height: 2rem;
     border-radius: var(--r-pill);
-    background: var(--mark);
-    color: var(--mark-ink);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0;
+    object-fit: cover;
+    flex: none;
   }
   .rail__name { font-size: 0.95rem; }
+
+  /* The page opens on a huge name, so the bar does not repeat it. It slides in
+     once the big one has scrolled away. This is a scroll-driven animation:
+     no script. Where it is unsupported the name just stays visible. */
+  @supports (animation-timeline: scroll()) {
+    .rail__name {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      opacity: 0;
+      max-width: 0;
+      margin-left: -0.55rem;      /* cancels the flex gap while it is hidden */
+      animation: name-in linear both;
+      animation-timeline: scroll(root);
+      animation-range: 140px 300px;
+    }
+    @keyframes name-in {
+      to { opacity: 1; max-width: 10rem; margin-left: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .rail__name { animation-range: 140px 141px; }
+    }
+  }
 
   .rail__links {
     display: flex;
@@ -118,7 +127,6 @@ const isOn = (href: string) => here === url(href).replace(/\/$/, '');
     transition: color var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
   }
   .rail__link:hover { color: var(--ink); background: var(--shell); }
-  .rail__link.is-on { color: var(--mark); background: var(--mark-wash); }
 
   .rail__cta { margin-left: 0.35rem; }
 

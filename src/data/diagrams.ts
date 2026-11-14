@@ -1,13 +1,15 @@
 import type { Diagram } from '@/lib/diagram';
 
 /**
- * One entry per project that earns a drawing.
+ * One entry per project that earns a drawing, keyed by the project's slug.
+ * A featured project shows its drawing in the Work section; the others keep
+ * theirs ready for the day they are featured.
  *
  * Coordinates are plain SVG user units on a 760-wide canvas. Nothing is
  * auto-laid-out, because a diagram that explains something has to be composed,
  * not packed. To add one: copy the closest entry, move the boxes, done.
  */
-export const diagrams: Record<string, Diagram> = {
+export const diagrams: Partial<Record<string, Diagram>> = {
   /* ----------------------------------------------------------------------- */
   blinkui: {
     seed: 1317,

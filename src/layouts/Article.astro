@@ -1,26 +1,53 @@
 ---
+/** One article: its header, the body, and a footer pointing at more. */
 import Base from '@/layouts/Base.astro';
-import Icon from '@/components/Icon.astro';
-import { fmtDate, isoDate, url } from '@/lib/url';
+import Icon from '@/components/ui/Icon.astro';
 import { site } from '@/data/site';
+import { projects, projectHref } from '@/data/projects';
+import { minutesOf, type Post } from '@/lib/content';
+import { fmtDate, isoDate } from '@/lib/dates';
+import { absolute, url } from '@/lib/url';
 
-interface Props {
-  title: string;
-  description: string;
-  published: Date;
-  updated?: Date;
-  minutes: number;
-  tags: string[];
-  devto?: string;
-}
-const { title, description, published, updated, minutes, tags, devto } = Astro.props;
+interface Props { post: Post; }
+const { post } = Astro.props;
+const { title, description, published, updated, tags, devto } = post.data;
+
+/* A reader who lands here from a search should find the project too. The link
+   is the same one a project card makes to its write-up, read the other way. */
+const project = projects.find((p) => p.article === post.id);
+
+const image = `/og/writing/${post.id}.png`;
+const here = new URL(Astro.url.pathname, Astro.site).href;
+
+/* Structured data, so a search result can show the date and the author. */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: isoDate(published),
+  dateModified: isoDate(updated ?? published),
+  url: here,
+  mainEntityOfPage: here,
+  image: absolute(image),
+  keywords: tags.join(', ') || undefined,
+  author: { '@type': 'Person', name: site.name, url: absolute('/') },
+};
 ---
 
-<Base title={title} description={description} type="article" publishedTime={isoDate(published)}>
+<Base
+  title={title}
+  description={description}
+  type="article"
+  publishedTime={isoDate(published)}
+  image={image}
+  imageAlt={`${title}, by ${site.name}`}
+  jsonLd={jsonLd}
+>
   <article class="article">
     <header class="article__head wrap wrap--text">
-      <a class="article__back" href={url('/writing')}>
-        <Icon name="arrow-right" size={13} class="article__backicon" />
+      <a class="article__back" href={url('/#writing')}>
+        <Icon name="arrow-right" size={13} />
         All writing
       </a>
 
@@ -28,7 +55,7 @@ const { title, description, published, updated, minutes, tags, devto } = Astro.p
 
       <div class="article__meta">
         <time class="meta" datetime={isoDate(published)}>{fmtDate(published)}</time>
-        <span class="meta">{minutes} min read</span>
+        <span class="meta">{minutesOf(post)} min read</span>
         {updated && <span class="meta">updated {fmtDate(updated)}</span>}
       </div>
 
@@ -44,6 +71,12 @@ const { title, description, published, updated, minutes, tags, devto } = Astro.p
 
       <footer class="article__foot">
         <hr class="rule" />
+        {project && (
+          <p class="article__proj">
+            Related project: <a class="link" href={url(projectHref(project))}>{project.name}</a>,
+            with its source and a drawing of how it works.
+          </p>
+        )}
         <div class="article__footrow">
           <p class="article__by">
             Written by {site.name}.
@@ -53,7 +86,7 @@ const { title, description, published, updated, minutes, tags, devto } = Astro.p
               </>
             )}
           </p>
-          <a class="btn" href={url('/writing')}>
+          <a class="btn" href={url('/#writing')}>
             More writing
             <span class="btn__cap" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
           </a>
@@ -77,7 +110,17 @@ const { title, description, published, updated, minutes, tags, devto } = Astro.p
     margin-bottom: 0.6rem;
   }
   .article__back:hover { color: var(--mark); }
-  .article__backicon { transform: rotate(180deg); }
+  /* The right arrow, turned round. Translating after the rotation moves it in
+     the rotated frame, so on hover it steps left, the way it points. */
+  .article__back :global(svg) {
+    transform: rotate(180deg);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .article__back:hover :global(svg) { transform: rotate(180deg) translateX(2px); }
+  @media (prefers-reduced-motion: reduce) {
+    .article__back :global(svg) { transition: none; }
+    .article__back:hover :global(svg) { transform: rotate(180deg); }
+  }
 
   .article__title { max-width: 20ch; letter-spacing: -0.032em; }
   .article__meta { display: flex; gap: 1rem; flex-wrap: wrap; }
@@ -89,6 +132,7 @@ const { title, description, published, updated, minutes, tags, devto } = Astro.p
 
   .article__foot { margin-top: 3.5rem; }
   .article__foot .rule { margin-bottom: 1.8rem; }
+  .article__proj { margin: 0 0 1.4rem; color: var(--ink-2); }
   .article__footrow {
     display: flex;
     align-items: center;

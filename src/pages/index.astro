@@ -1,235 +1,36 @@
 ---
-import { getCollection } from 'astro:content';
+/**
+ * The whole site is this one page, in this order: what I built, what I can
+ * do (right after the evidence), what I wrote, and who I am.
+ */
 import Base from '@/layouts/Base.astro';
-import ProjectFeature from '@/components/ProjectFeature.astro';
-import ProjectTile from '@/components/ProjectTile.astro';
-import ArticleRow from '@/components/ArticleRow.astro';
-import Chips from '@/components/Chips.astro';
-import Icon from '@/components/Icon.astro';
-import TodoBanner from '@/components/TodoBanner.astro';
-import { projects } from '@/data/projects';
-import { skills } from '@/data/skills';
-import { site, resumeHref, resumeIsFile } from '@/data/site';
-import { url, readingMinutes } from '@/lib/url';
+import Hero from '@/components/home/Hero.astro';
+import Work from '@/components/home/Work.astro';
+import Skills from '@/components/home/Skills.astro';
+import Writing from '@/components/home/Writing.astro';
+import About from '@/components/home/About.astro';
+import { site, socials } from '@/data/site';
+import { absolute, isExternal } from '@/lib/url';
 
-const libs = projects.filter((p) => p.kind === 'library' && p.featured);
-const pick = (slug: string) => projects.find((p) => p.slug === slug)!;
-const bento = [pick('keemat'), pick('noreels'), pick('oneonone')];
-
-const posts = (await getCollection('writing', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
-  .slice(0, 3);
+/* Who this page is about, for search engines: the name, the job, and the
+   profiles that are the same person. */
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  alternateName: site.handle,
+  jobTitle: site.role,
+  description: site.description,
+  url: absolute('/'),
+  image: absolute(site.avatar),
+  sameAs: socials.map((s) => s.href).filter(isExternal),
+};
 ---
 
-<Base>
-  <TodoBanner />
-
-  {/* ---------------------------------------------------------------- Hero */}
-  <section class="hero">
-    <div class="wrap hero__grid">
-      <div class="hero__text">
-        <p class="eyebrow">Open to new roles</p>
-        <h1 class="display hero__head">Deep in iOS. Curious everywhere else.</h1>
-        <p class="lede hero__lede">
-          I'm Kunal. I build apps and libraries, take things apart to see how they
-          work, and write it down.
-        </p>
-        <div class="hero__acts">
-          <a class="btn btn--solid" href={url('/work')}>
-            See the work
-            <span class="btn__cap" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
-          </a>
-          <a class="btn" href={url(resumeHref)} download={resumeIsFile || undefined}>
-            Résumé
-            <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
-          </a>
-        </div>
-      </div>
-
-      <div class="hero__shot">
-        <figure class="shot plate">
-          <div class="plate__core shot__core">
-            <img
-              src={url(site.avatar)}
-              alt={`${site.name}, smiling, against a plain wall`}
-              width="608" height="608"
-              fetchpriority="high" decoding="async"
-            />
-          </div>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  {/* ----------------------------------------------------------- Libraries */}
-  <section class="section" id="libraries">
-    <div class="wrap">
-      <header class="sec">
-        <h2 class="h1 sec__head">Two libraries other people use.</h2>
-        <p class="lede">
-          Both started as a question I could not drop. The drawing under each one
-          is how it actually works, not a marketing diagram.
-        </p>
-      </header>
-
-      <div class="libs">
-        {libs.map((p) => <ProjectFeature project={p} />)}
-      </div>
-
-      <a class="btn sec__more" href={url('/libraries')}>
-        Libraries, in full
-        <span class="btn__cap" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
-      </a>
-    </div>
-  </section>
-
-  {/* --------------------------------------------------------------- Range */}
-  <section class="section" id="range">
-    <div class="wrap">
-      <header class="sec">
-        <h2 class="h1 sec__head">iOS is the deep end, not the whole pool.</h2>
-      </header>
-
-      <div class="bands">
-        {skills.map((band) => (
-          <div class="band reveal">
-            <div class="band__label">
-              <h3 class="h3">{band.heading}</h3>
-              <p class="meta band__note">{band.note}</p>
-            </div>
-            <Chips items={band.items} />
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {/* ------------------------------------------------------- Selected work */}
-  <section class="section" id="work">
-    <div class="wrap">
-      <header class="sec">
-        <h2 class="h1 sec__head">Things I built to answer a question.</h2>
-      </header>
-
-      <div class="bento">
-        <ProjectTile project={bento[0]} span={7} />
-        <ProjectTile project={bento[1]} span={5} />
-        <ProjectTile project={bento[2]} span={12} />
-      </div>
-
-      <a class="btn sec__more" href={url('/work')}>
-        All {projects.length} projects
-        <span class="btn__cap" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
-      </a>
-    </div>
-  </section>
-
-  {/* ------------------------------------------------------------- Writing */}
-  <section class="section" id="writing">
-    <div class="wrap">
-      <header class="sec">
-        <h2 class="h1 sec__head">Notes from working it out.</h2>
-      </header>
-
-      <div class="posts">
-        {posts.map((post) => (
-          <ArticleRow
-            href={`/writing/${post.id}`}
-            title={post.data.title}
-            description={post.data.description}
-            published={post.data.published}
-            minutes={post.data.readingTime ?? readingMinutes(post.body ?? '')}
-            tags={post.data.tags}
-          />
-        ))}
-      </div>
-
-      <a class="btn posts__more" href={url('/writing')}>
-        Everything I have written
-        <span class="btn__cap" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
-      </a>
-    </div>
-  </section>
+<Base jsonLd={person}>
+  <Hero />
+  <Work />
+  <Skills />
+  <Writing />
+  <About />
 </Base>
-
-<style>
-  /* --- Hero. Asymmetric split, text left, photo right. ------------------ */
-  .hero { padding-top: clamp(2.5rem, 1.5rem + 5vw, 5rem); padding-bottom: clamp(3rem, 2rem + 5vw, 6rem); }
-  .hero__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
-    gap: clamp(2rem, 4vw, 4.5rem);
-    align-items: center;
-  }
-  .hero__text { display: grid; justify-items: start; gap: 1.2rem; }
-  .hero__head {
-    font-size: clamp(2.3rem, 1rem + 3.7vw, 3.9rem);
-    max-width: 19ch;
-  }
-  .hero__lede { max-width: 42ch; }
-  .hero__acts { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.4rem; }
-
-  .shot { margin: 0; width: 100%; max-width: 360px; margin-left: auto; }
-  .shot__core { padding: 6px; overflow: hidden; }
-  .shot img {
-    width: 100%;
-    height: auto;
-    border-radius: calc(var(--r-core) - 5px);
-    aspect-ratio: 1;
-    object-fit: cover;
-  }
-  /* A print pinned very slightly crooked, which straightens when you look at it. */
-  .shot {
-    transform: rotate(-1.4deg);
-    transition: transform var(--dur-3) var(--ease);
-  }
-  .shot:hover { transform: rotate(0deg); }
-
-  @media (max-width: 880px) {
-    .hero__grid { grid-template-columns: 1fr; gap: 1.8rem; }
-    .hero__shot { order: -1; }
-    .shot { max-width: 86px; margin-left: 0; transform: none; }
-    .hero__head { max-width: 18ch; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .shot { transition: none; }
-    .shot:hover { transform: rotate(-1.4deg); }
-  }
-
-  /* --- Section headers -------------------------------------------------- */
-  .sec { display: grid; gap: 1rem; margin-bottom: clamp(2.5rem, 4vw, 4rem); max-width: 60ch; }
-  .sec__head { letter-spacing: -0.034em; }
-  .sec__more { margin-top: clamp(2.5rem, 4vw, 3.5rem); }
-
-  /* --- Libraries -------------------------------------------------------- */
-  .libs { display: grid; gap: clamp(4rem, 7vw, 7rem); }
-
-  /* --- Range. Three labelled bands, one hairline each. ------------------ */
-  .bands { display: grid; }
-  .band {
-    display: grid;
-    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
-    gap: clamp(1.25rem, 3vw, 3rem);
-    padding-block: clamp(1.5rem, 3vw, 2.4rem);
-    border-top: 1px solid var(--rule-soft);
-    align-items: start;
-  }
-  .band__note { margin-top: 0.4rem; line-height: 1.5; max-width: 30ch; }
-  @media (max-width: 760px) {
-    .band { grid-template-columns: 1fr; gap: 1rem; }
-  }
-
-  /* --- Bento. Three items, three cells, no empty tiles. ----------------- */
-  .bento {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: clamp(0.85rem, 1.6vw, 1.25rem);
-  }
-  @media (max-width: 900px) {
-    .bento { grid-template-columns: 1fr; }
-  }
-
-  /* --- Writing ---------------------------------------------------------- */
-  .posts { border-top: 1px solid var(--rule-soft); }
-  .posts__more { margin-top: clamp(2rem, 3.5vw, 3rem); }
-</style>

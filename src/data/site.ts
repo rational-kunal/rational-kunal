@@ -2,63 +2,54 @@
  * Everything about the person, in one file.
  * Edit here and the whole site follows - nothing below is hard-coded in a page.
  */
+import { external, isExternal } from '@/lib/url';
 
 export const site = {
   name: 'Kunal Kamble',
   handle: 'rational-kunal',
   role: 'Software engineer',
-  // Shown under the name in the hero. Keep it to one line.
-  title: 'iOS is where I went deep. It is not where I stop.',
   description:
     'Software engineer with an iOS core. I build things end to end, write about how they work, and draw the diagram before the code.',
   locale: 'en',
-  // Used for the résumé button and the OG image fallback.
-  resume: '/resume.pdf',
-  /* TODO - flip this to `true` the moment you drop the PDF at public/resume.pdf.
-     While it is false the Résumé buttons still render, but they point at the
-     résumé block on /about instead of downloading a file that is not there. */
-  resumeReady: false,
+  // Where every Résumé button goes. A path under public/ (like '/resume.pdf')
+  // downloads; a full URL opens in a new tab.
+  resume: 'https://drive.google.com/file/d/1tfk3asheAUxfrWYtPqoP5dOR5w3qCsB6/view?usp=drive_link',
+  /* Temporarily off. Flip to `true` to bring back "open to new roles" in the
+     hero, the "If you are hiring" block in About, and the footer line. */
+  openToWork: false,
   avatar: '/kunal.jpg',
   mark: '/mark.png',
 } as const;
 
-/** Where a Résumé button should go, given whether the PDF exists yet. */
-export const resumeHref = site.resumeReady ? site.resume : '/about#resume';
-export const resumeIsFile = site.resumeReady;
+/** Spread onto every Résumé link: a hosted file opens in a new tab, a local PDF downloads. */
+export const resumeAttrs: { download?: true; target?: '_blank'; rel?: string } =
+  isExternal(site.resume) ? external(site.resume) : { download: true };
 
 export type SocialLink = {
   label: string;
   href: string;
-  icon: 'github' | 'devto' | 'linkedin' | 'x' | 'mail' | 'rss';
-  /** Shown in the nav rail, not only in the footer. */
+  /** Phosphor Light name, or a Simple Icons slug when `brand` is set. */
+  icon: string;
+  brand?: boolean;
+  /** Also listed in the hiring block while openToWork is on. */
   primary?: boolean;
-  /** true when the URL still needs to be filled in. */
-  todo?: boolean;
+  /** A quiet "old" tag in the "Find me" menu, for an account that is no longer updated. */
+  old?: boolean;
 };
 
-/* ---------------------------------------------------------------------------
- * TODO - THREE LINKS STILL NEED REAL URLS
- *
- *   linkedin : replace the `#` with your profile URL, then delete `todo: true`
- *   x        : same, or delete the whole entry if you do not want it listed
- *   mail     : put the address you are happy to publish. It is deliberately
- *              not filled in here, because the only address this project knows
- *              is your private Claude-filtered one.
- *
- * Entries with `todo: true` render as a dimmed, non-clickable icon with a
- * title tooltip, so the row never looks broken while you track them down.
- * ------------------------------------------------------------------------- */
+/* In the order they appear in the hero's "Find me" menu and the footer. */
 export const socials: SocialLink[] = [
-  { label: 'GitHub',   href: 'https://github.com/rational-kunal', icon: 'github', primary: true },
-  { label: 'Dev.to',   href: 'https://dev.to/rationalkunal',      icon: 'devto',  primary: true },
-  { label: 'LinkedIn', href: '#', icon: 'linkedin', primary: true, todo: true },
-  { label: 'X',        href: '#', icon: 'x',        todo: true },
-  { label: 'Email',    href: '#', icon: 'mail',     primary: true, todo: true },
+  { label: 'GitHub',         href: 'https://github.com/rational-kunal',                   icon: 'github-logo',         primary: true },
+  { label: 'LinkedIn',       href: 'https://www.linkedin.com/in/kunal-kamble-671b3a118/', icon: 'linkedin-logo',       primary: true },
+  { label: 'Email',          href: 'mailto:kunalgk1999@gmail.com',                        icon: 'envelope-simple',     primary: true },
+  { label: 'Stack Overflow', href: 'https://stackoverflow.com/users/kunal-kamble',        icon: 'stack-overflow-logo' },
+  { label: 'Codeforces',     href: 'https://codeforces.com/profile/rational_kunal',       icon: 'codeforces',          brand: true },
+  { label: 'Dev.to',         href: 'https://dev.to/rationalkunal',                        icon: 'devdotto',            brand: true, old: true },
 ];
 
+/** The page is one long sheet, so the nav is three places on it. */
 export const nav = [
-  { label: 'Work',      href: '/work' },
-  { label: 'Libraries', href: '/libraries' },
-  { label: 'Writing',   href: '/writing' },
-  { label: 'About',     href: '/about' },
+  { label: 'Work',    href: '/#work' },
+  { label: 'Writing', href: '/#writing' },
+  { label: 'About',   href: '/#about' },
 ];

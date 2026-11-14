@@ -1,0 +1,68 @@
+---
+/** What I can do, by how deep it goes. Sits right after the work that proves it. */
+import Icon from '@/components/ui/Icon.astro';
+import { skills } from '@/data/skills';
+---
+
+<section class="section skills" id="skills">
+  <div class="wrap">
+    <div class="skills__head">
+      <p class="meta skills__kicker">Skills</p>
+      <h2 class="h2">What I can actually do</h2>
+    </div>
+    <div class="bands">
+      {skills.map((band) => (
+        <div class="band reveal">
+          <div class="band__label">
+            <h3 class="h3">{band.heading}</h3>
+            <p class="meta band__note">{band.note}</p>
+          </div>
+          <ul class="chips">
+            {band.items.map((s) => (
+              <li class="chip">
+                <Icon name={s.icon} brand={s.brand} size={s.brand ? 12 : 14} />
+                {s.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .skills__head { display: grid; gap: 0.6rem; margin-bottom: clamp(1.8rem, 3vw, 2.6rem); }
+  .skills__kicker { margin: 0; }
+  .bands { display: grid; }
+  .band {
+    display: grid;
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    gap: clamp(1.25rem, 3vw, 3rem);
+    padding-block: clamp(1.5rem, 3vw, 2.4rem);
+    border-top: 1px solid var(--rule-soft);
+    align-items: start;
+  }
+  .band__note { margin-top: 0.4rem; line-height: 1.5; max-width: 30ch; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; padding: 0; margin: 0; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: -0.01em;
+    color: var(--ink-2);
+    padding: 0.26rem 0.6rem;
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--r-pill);
+    background: var(--shell);
+    white-space: nowrap;
+  }
+  .chip :global(svg) { flex: none; }
+
+  @media (max-width: 760px) {
+    .band { grid-template-columns: 1fr; gap: 1rem; }
+  }
+</style>

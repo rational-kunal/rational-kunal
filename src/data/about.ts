@@ -17,13 +17,4 @@ export const about = {
     'The label on my work says iOS, and that is honestly where I am deepest: Swift, the frameworks, the debugger, the parts of UIKit nobody reads about until something breaks. But the problems I enjoy rarely stay inside one runtime. A price tracker needs a scraper. A video player needs you to know what a transport stream is. A better pull request needs a browser extension. So I follow them out.',
     'I write things down as I go, usually because I had to work something out twice before it stuck. Most of what is here started as a note to myself. If a project has a drawing on this site, it is because the shape of the thing is the explanation, and a paragraph was doing a worse job of it.',
   ],
-
-  /** Short, factual lines for the résumé block. */
-  resumeLines: [
-    'Swift and SwiftUI across apps, packages and a terminal UI framework',
-    'Objective-C, UIKit and the debugging end of iOS',
-    'Two open-source Swift libraries other people depend on',
-    'Nine published technical articles, written while solving the problem',
-    'Comfortable enough outside iOS to build the rest of the thing',
-  ],
 } as const;

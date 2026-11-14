@@ -2,38 +2,34 @@
    Design tokens.
 
    The palette is lifted from Kunal's own vector portrait: warm paper, near
-   black ink, and the maroon of the glasses. Nothing here was invented to look
-   designed; change the three seed values below and the whole site follows.
+   black ink, and the maroon of the glasses, shown only in its dark form. There
+   is no light theme and nothing here branches on prefers-color-scheme.
    =========================================================================== */
 
 :root {
-  /* --- Seed colours (from the portrait) ---------------------------------- */
-  --seed-paper: #fff6d5;
-  --seed-ink:   #16130d;
-  --seed-mark:  #800000;
+  color-scheme: dark;
 
-  /* --- Light: paper ------------------------------------------------------ */
-  --paper:        #fcf5dd;
-  --paper-sunk:   #f5ecca;  /* diagram canvases, code blocks */
-  --paper-raise:  #fffbe9;  /* inner core of a nested card */
-  --ink:          #16130d;
-  --ink-2:        #4b4234;
-  --ink-3:        #6e644c;
-  --mark:         #800000;
-  --mark-ink:     #fffbe9;  /* text sitting on --mark */
-  --mark-wash:    rgba(128, 0, 0, 0.08);
-  --rule:         rgba(22, 19, 13, 0.14);
-  --rule-soft:    rgba(22, 19, 13, 0.07);
-  --shell:        rgba(22, 19, 13, 0.035);
+  /* --- Colour ------------------------------------------------------------ */
+  --paper:        #15130e;
+  --paper-sunk:   #100e09;  /* diagram canvases, code blocks */
+  --paper-raise:  #1e1a13;  /* inner core of a nested card */
+  --ink:          #f4ecd6;
+  --ink-2:        #bdb39a;
+  --ink-3:        #8b8270;
+  --mark:         #ee5d4d;  /* the portrait's #800000, lifted to clear AA on ink */
+  --mark-ink:     #1a0806;  /* text sitting on --mark */
+  --mark-wash:    rgba(238, 93, 77, 0.12);
+  --rule:         rgba(244, 236, 214, 0.17);
+  --rule-soft:    rgba(244, 236, 214, 0.085);
+  --shell:        rgba(244, 236, 214, 0.045);
   --lift:
-    0 1px 2px rgba(74, 58, 20, 0.05),
-    0 8px 24px -10px rgba(74, 58, 20, 0.14);
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 10px 30px -12px rgba(0, 0, 0, 0.6);
   --lift-hi:
-    0 2px 4px rgba(74, 58, 20, 0.06),
-    0 18px 46px -14px rgba(74, 58, 20, 0.22);
-  --inner-hi: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  --grain-opacity: 0.045;
-  --shiki-mode: 'light';
+    0 2px 6px rgba(0, 0, 0, 0.45),
+    0 22px 56px -16px rgba(0, 0, 0, 0.72);
+  --inner-hi: inset 0 1px 0 rgba(244, 236, 214, 0.08);
+  --grain-opacity: 0.03;
 
   /* --- Shape. One scale, concentric. ------------------------------------- */
   --r-shell: 18px;          /* outer wrapper of a nested card */
@@ -43,9 +39,11 @@
 
   /* --- Type -------------------------------------------------------------- */
   --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  /* Headings and names. Bricolage has an optical-size axis, so it is sharper
+     and a little odder as it gets bigger. */
+  --font-display: 'Bricolage Grotesque Variable', 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', monospace;
 
-  --t-display: clamp(2.6rem, 1.1rem + 6.2vw, 5.1rem);
   --t-h1:      clamp(2.1rem, 1.1rem + 4.1vw, 3.5rem);
   --t-h2:      clamp(1.65rem, 1.1rem + 2.3vw, 2.4rem);
   --t-h3:      clamp(1.18rem, 1rem + 0.8vw, 1.45rem);
@@ -64,39 +62,9 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-1: 180ms;
   --dur-2: 420ms;
-  --dur-3: 800ms;
 
   /* --- Layers. Nothing in this project may invent its own z-index. ------- */
-  --z-base: 0;
   --z-sticky: 20;
   --z-overlay: 40;
   --z-grain: 60;
-
-  color-scheme: light dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper:       #15130e;
-    --paper-sunk:  #100e09;
-    --paper-raise: #1e1a13;
-    --ink:         #f4ecd6;
-    --ink-2:       #bdb39a;
-    --ink-3:       #8b8270;
-    --mark:        #ee5d4d;   /* same hue as #800000, lifted to clear AA on ink */
-    --mark-ink:    #1a0806;
-    --mark-wash:   rgba(238, 93, 77, 0.12);
-    --rule:        rgba(244, 236, 214, 0.17);
-    --rule-soft:   rgba(244, 236, 214, 0.085);
-    --shell:       rgba(244, 236, 214, 0.045);
-    --lift:
-      0 1px 2px rgba(0, 0, 0, 0.4),
-      0 10px 30px -12px rgba(0, 0, 0, 0.6);
-    --lift-hi:
-      0 2px 6px rgba(0, 0, 0, 0.45),
-      0 22px 56px -16px rgba(0, 0, 0, 0.72);
-    --inner-hi: inset 0 1px 0 rgba(244, 236, 214, 0.08);
-    --grain-opacity: 0.03;
-    --shiki-mode: 'dark';
-  }
 }

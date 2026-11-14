@@ -1,0 +1,349 @@
+---
+/**
+ * Everything built, in one place. Libraries, apps, tools and experiments are
+ * not different kinds of page, so they are not different kinds of section.
+ *
+ * Every project is one card, picture on top and words underneath, so there is
+ * a single pattern to learn. A featured card's picture is the drawing of how it
+ * works beside a real screenshot; a small card's picture is a screenshot
+ * peeking in, or a three-step flow where there is none.
+ */
+import Diagram from '@/components/drawing/Diagram.astro';
+import MiniFlow from '@/components/drawing/MiniFlow.astro';
+import PaperGrid from '@/components/drawing/PaperGrid.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Shot from '@/components/ui/Shot.astro';
+import Stars from '@/components/ui/Stars.astro';
+import { diagrams } from '@/data/diagrams';
+import { projects, findProject, projectHref } from '@/data/projects';
+import { getNotes } from '@/lib/content';
+import { fmtDate, isoDate } from '@/lib/dates';
+import { url } from '@/lib/url';
+
+const featured = projects.filter((p) => p.featured);
+const rest = projects.filter((p) => !p.featured).sort((a, b) => b.stars - a.stars);
+const notes = await getNotes();
+
+/** A stable number per project, so its drawn pieces wobble the same every build. */
+const seedOf = (slug: string) => [...slug].reduce((a, c) => a + c.charCodeAt(0), 0);
+---
+
+<section class="section work" id="work">
+  <div class="wrap">
+    <header class="work__head">
+      <h2 class="h2">Work</h2>
+      <p class="lede">
+        The ones I would show first, each with a drawing of how it works.
+        Everything else is further down.
+      </p>
+    </header>
+
+    {/* ----------------------------------------------------------- Featured */}
+    <div class="cases">
+      {featured.map((p) => {
+        const d = diagrams[p.slug];
+        return (
+          <article class="card case" id={p.slug}>
+            <div class="case__media">
+              {d ? (
+                <Diagram diagram={d} title={`How ${p.name} works`} class="case__draw" />
+              ) : p.mini && (
+                <div class="case__draw"><MiniFlow steps={p.mini} seed={seedOf(p.slug)} /></div>
+              )}
+              {p.shot && <Shot {...p.shot} class="case__shot" />}
+            </div>
+
+            <div class="case__body">
+              <div class="case__words">
+                <h3 class="case__name">{p.name}</h3>
+                <p class="case__tag">{p.tagline}</p>
+                <p class="meta">{p.stack.join(', ')}</p>
+              </div>
+              <div class="links">
+                <Stars count={p.stars} />
+                <a class="plink" href={p.repo} rel="noopener" target="_blank">
+                  Source <Icon name="arrow-up-right" size={13} />
+                </a>
+                {p.demo && (
+                  <a class="plink" href={p.demo} rel="noopener" target="_blank">
+                    Try it <Icon name="arrow-up-right" size={13} />
+                  </a>
+                )}
+                {p.article && (
+                  <a class="plink" href={url(`/writing/${p.article}`)}>
+                    Write-up <Icon name="arrow-right" size={13} />
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    {/* ---------------------------------------------------------- The rest */}
+    <h3 class="more__head">And the rest</h3>
+    <ul class="tiles">
+      {rest.map((p) => (
+        <li class="card tile reveal" id={p.slug}>
+          <div class:list={['tile__stage', { 'tile__stage--shot': !!p.shot }]}>
+            {p.shot ? (
+              <Shot {...p.shot} class="tile__peek" />
+            ) : p.mini ? (
+              <MiniFlow steps={p.mini} seed={seedOf(p.slug)} />
+            ) : (
+              <PaperGrid seed={seedOf(p.slug) * 13} />
+            )}
+          </div>
+
+          <div class="tile__body">
+            <div class="tile__top">
+              <h4 class="tile__name">{p.name}</h4>
+              <Stars count={p.stars} />
+            </div>
+            <p class="tile__tag">{p.tagline}</p>
+            <p class="tile__what">{p.what}</p>
+            <div class="tile__foot">
+              <span class="meta">{p.stack.slice(0, 3).join(', ')}</span>
+              <span class="links">
+                <a class="plink" href={p.repo} rel="noopener" target="_blank">
+                  Source <Icon name="arrow-up-right" size={13} />
+                </a>
+                {p.demo && (
+                  <a class="plink" href={p.demo} rel="noopener" target="_blank">
+                    Try it <Icon name="arrow-up-right" size={13} />
+                  </a>
+                )}
+              </span>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    {/* ---------------------------------------------------- Release notes */}
+    {notes.length > 0 && (
+      <div class="rel">
+        <h3 class="more__head">Latest from the libraries</h3>
+        <ul class="rel__list">
+          {notes.map((n) => {
+            const proj = n.data.project ? findProject(n.data.project) : undefined;
+            return (
+              <li>
+                <time class="meta" datetime={isoDate(n.data.date)}>{fmtDate(n.data.date)}</time>
+                {proj
+                  ? <a class="rel__what" href={url(projectHref(proj))}>{proj.name}{n.data.version ? ` ${n.data.version}` : ''}: {n.data.title}</a>
+                  : <span class="rel__what">{n.data.title}</span>}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .work__head {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: clamp(1.6rem, 3vw, 2.4rem);
+  }
+  .work__head .lede { margin: 0; }
+
+  /* --- One card, one border ------------------------------------------------ */
+  .card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--paper-raise);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-shell);
+  }
+
+  /* The links every card ends with: plain words, an arrow that points out. */
+  .links { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 1.25rem; }
+  .plink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: var(--t-small);
+    font-weight: 520;
+    color: var(--ink);
+    text-decoration: none;
+    transition: color var(--dur-1) var(--ease);
+  }
+  .plink:hover { color: var(--mark); }
+  .plink :global(svg) { transition: transform var(--dur-1) var(--ease); }
+  .plink:hover :global(svg) { transform: translate(1.5px, -1.5px); }
+  .plink:hover :global(svg[data-icon='arrow-right']) { transform: translateX(2px); }
+
+  /* --- Featured ------------------------------------------------------------ */
+  .cases { display: grid; gap: clamp(1rem, 2vw, 1.5rem); }
+
+  /* The picture: the drawing, and the real thing beside it. */
+  .case__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    background: var(--paper-sunk);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .case :global(.case__draw) { flex: 1 1 0; min-width: 0; max-width: 50rem; }
+  .case :global(.case__shot) { flex: none; }
+  /* A phone stands at a fixed height; a window takes a fixed width. */
+  .case :global(.case__shot.shotfig--tall img) { width: auto; height: 22rem; }
+  .case :global(.case__shot.shotfig--wide) { width: 22rem; }
+
+  .case__body {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    padding: clamp(1.1rem, 2.4vw, 1.6rem) clamp(1.1rem, 2.6vw, 1.9rem);
+  }
+  .case__words { display: grid; gap: 0.3rem; }
+  .case__words p { margin: 0; }
+  .case__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 1.1rem + 1.2vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: -0.028em;
+  }
+  .case__tag { color: var(--ink-2); }
+  .case__words .meta { margin-top: 0.25rem; }
+
+  @media (max-width: 900px) {
+    .case__media { flex-direction: column; align-items: stretch; }
+    .case :global(.case__draw) { flex: none; max-width: none; }
+    .case :global(.case__shot) { align-self: center; }
+    .case :global(.case__shot.shotfig--tall img) { height: 18rem; }
+    .case :global(.case__shot.shotfig--wide) { width: 100%; max-width: 26rem; }
+  }
+
+  /* --- The rest ------------------------------------------------------------ */
+  .more__head {
+    font-size: var(--t-h3);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: clamp(2.6rem, 5vw, 3.8rem) 0 1.1rem;
+  }
+  .tiles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.85rem, 1.6vw, 1.25rem);
+  }
+
+  .tile__stage {
+    position: relative;
+    height: 8.5rem;
+    display: grid;
+    place-items: center;
+    padding: 0.75rem 1.25rem;
+    overflow: hidden;
+    background: var(--paper-sunk);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .tile__stage :global(svg.mini) { max-width: 21rem; }
+
+  /* A screenshot peeks up into the stage and is cut off by its bottom edge. */
+  .tile__stage--shot { padding: 0; }
+  .tile__stage--shot :global(.tile__peek) {
+    position: absolute;
+    top: 1.1rem;
+    left: 50%;
+    translate: -50% 0;
+    transition: translate var(--dur-2) var(--ease-out);
+  }
+  .tile__stage--shot :global(.tile__peek.shotfig img) {
+    width: auto;
+    max-width: none;
+    height: 16rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tile:hover .tile__stage--shot :global(.tile__peek) { translate: -50% -0.4rem; }
+  }
+
+  .tile__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.05rem clamp(1rem, 2vw, 1.35rem) 1.15rem;
+  }
+  .tile__body p { margin: 0; }
+  .tile__top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .tile__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.018em;
+    color: var(--ink);
+  }
+  .tile__tag { color: var(--ink); font-size: var(--t-small); }
+  .tile__what { color: var(--ink-3); font-size: var(--t-small); line-height: 1.62; }
+  .tile__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-top: auto;
+    padding-top: 0.9rem;
+  }
+
+  /* On a narrow screen ten full-width cards were most of the page. They become
+     one swipeable row instead: the next card peeks in from the right edge, so
+     the row reads as more-to-see without a label. CSS scroll snap, no script. */
+  @media (max-width: 860px) {
+    .tiles {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: min(84%, 26rem);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gutter);
+      margin-inline: calc(-1 * var(--gutter));
+      padding: 0 var(--gutter) 0.75rem;
+      scrollbar-width: none;
+    }
+    .tiles::-webkit-scrollbar { display: none; }
+    .tile { scroll-snap-align: start; }
+    /* The reveal follows vertical scroll, which this row does not have. */
+    .tile.reveal { animation: none; }
+  }
+
+  /* --- Release notes, only when there are some ---------------------------- */
+  .rel__list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .rel__list li {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .rel__what { color: var(--ink); text-decoration: none; }
+  a.rel__what:hover { color: var(--mark); }
+
+  /* Arriving from a scene at the top of the page: a brief ring says "this one".
+     It only fades a shadow, so nothing is ever hidden if it does not run. */
+  @media (prefers-reduced-motion: no-preference) {
+    .card:target { animation: landed 1.8s var(--ease-out); }
+  }
+  @keyframes landed {
+    0%, 25% { box-shadow: 0 0 0 2px var(--mark), 0 0 0 12px var(--mark-wash); }
+    100%    { box-shadow: 0 0 0 2px transparent, 0 0 0 12px transparent; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tile__stage--shot :global(.tile__peek), .plink :global(svg) { transition: none; }
+  }
+</style>

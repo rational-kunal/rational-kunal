@@ -59,6 +59,6 @@ function simulateClick(onNode) {
 Here is the output:
 ![Image description](/writing/open-documents-in-viewing-mode/db89fa7f.gif)
 
-You can use this script with browser extensions like Tampermonkey. Personally, I'm compiling several such scripts into a custom extension for ease of use. Feel free to check out my project on GitHub: [Rational Chrome Extensions](https://github.com/rational-kunal/Rational-Chrome-Extensions).
+You can use this script with browser extensions like Tampermonkey. Personally, I am compiling several such scripts into a custom extension for ease of use. Feel free to check out my project on GitHub: [Rational Chrome Extensions](https://github.com/rational-kunal/Rational-Chrome-Extensions).
 
 Thank you for reading.

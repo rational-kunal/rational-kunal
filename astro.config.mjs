@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import { rehypeImageDims } from './plugins/rehype-image-dims.mjs';
+import { rehypeImageDims } from './src/lib/images.ts';
 
 // ---------------------------------------------------------------------------
 // DEPLOY TARGET — the only two lines you edit when the hosting repo changes.
@@ -24,7 +24,8 @@ export default defineConfig({
     // Reserves space for every local article image, so nothing jumps on load.
     rehypePlugins: [rehypeImageDims],
     shikiConfig: {
-      themes: { light: 'github-light', dark: 'github-dark' },
+      // The site is dark only, so code gets one theme and no CSS switch.
+      theme: 'github-dark',
       wrap: false,
     },
   },

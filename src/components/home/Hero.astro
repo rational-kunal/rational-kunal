@@ -1,0 +1,131 @@
+---
+/**
+ * The top of the page, drawn as one sheet: who I am, six scenes of projects
+ * doing what they do, and a title block that counts it all up.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import Connect from './Connect.astro';
+import Miniatures from './Miniatures.astro';
+import { projects } from '@/data/projects';
+import { site, resumeAttrs } from '@/data/site';
+import { getPosts } from '@/lib/content';
+import { url } from '@/lib/url';
+
+/* Every number in the title block is counted here rather than typed in.
+   Counts are exact; only stars get a "+", because they are a snapshot that grows. */
+const stars = projects.reduce((n, p) => n + p.stars, 0);
+const articles = (await getPosts()).length;
+---
+
+<section class="sheet">
+  <div class="wrap">
+    <div class="plate sheet__plate">
+      <div class="plate__core sheet__core">
+
+        <header class="mast">
+          <p class="mast__kicker meta">{site.role}{site.openToWork && ' · open to new roles'}</p>
+          <h1 class="mast__line">
+            I am <span class="mast__name">{site.name}</span>. I build silly
+            things, and then spend way too long making them work properly.
+          </h1>
+          <div class="mast__acts">
+            <a class="btn btn--solid" href={url(site.resume)} {...resumeAttrs}>
+              Résumé
+              <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
+            </a>
+            <Connect />
+          </div>
+        </header>
+
+        <div class="sheet__minis">
+          <Miniatures />
+        </div>
+
+        {/* The title block, the way a drawing carries one: fields, not prose. */}
+        <dl class="block">
+          <div class="block__f"><dt>Projects</dt><dd>{projects.length}</dd></div>
+          <div class="block__f"><dt>Stars</dt><dd>{stars}+</dd></div>
+          <div class="block__f"><dt>Articles</dt><dd>{articles}</dd></div>
+          <div class="block__f block__f--sig">
+            <dt>Drawn by</dt>
+            <dd>
+              <img src={url(site.avatar)} alt="" width="26" height="26" loading="lazy" decoding="async" />
+              <span>{site.handle}, <span class="block__ai">with help of AI</span></span>
+            </dd>
+          </div>
+        </dl>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sheet { padding: clamp(1.5rem, 3vw, 2.75rem) 0 clamp(3.5rem, 7vw, 6rem); }
+  .sheet__core { padding: clamp(1.1rem, 2.4vw, 2rem); }
+
+  .mast {
+    display: grid;
+    gap: 1.1rem;
+    justify-items: start;
+    padding-bottom: clamp(0.5rem, 1.5vw, 1rem);
+  }
+  .mast__kicker { margin: 0; color: var(--ink-3); }
+  .mast__line {
+    margin: 0;
+    max-width: 30ch;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 0.9rem + 2.9vw, 3.15rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--ink-2);
+    text-wrap: balance;
+  }
+  .mast__name { font-weight: 700; color: var(--ink); }
+  .mast__acts { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+  .sheet__minis { padding: clamp(1.2rem, 3vw, 2.2rem) 0 clamp(1.4rem, 2.5vw, 2rem); }
+
+  /* --- Title block ----------------------------------------------------- */
+  .block {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .block__f {
+    flex: 0 0 auto;
+    min-width: 7.5rem;
+    padding: 0.75rem 1.1rem 0.7rem 0;
+    margin-right: 1.1rem;
+    border-right: 1px solid var(--rule);
+  }
+  .block__f--sig { margin-left: auto; margin-right: 0; border-right: 0; text-align: right; }
+
+  .block dt {
+    font-size: var(--t-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+  .block dd {
+    margin: 0.3rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--ink);
+  }
+  .block__f--sig dd {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
+  .block__f--sig img { border-radius: 999px; }
+  .block__ai { color: var(--ink-3); }
+
+  @media (max-width: 1000px) {
+    .block__f--sig { margin-left: 0; text-align: left; }
+    .block__f--sig dd { justify-content: flex-start; }
+  }
+</style>

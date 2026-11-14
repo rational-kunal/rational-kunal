@@ -1,6 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
-import Icon from '@/components/Icon.astro';
+import Icon from '@/components/ui/Icon.astro';
 import { roughRect, roughArrow } from '@/lib/rough';
 import { url } from '@/lib/url';
 
@@ -36,7 +36,7 @@ const arrow = roughArrow(164, 54, 236, 54, 991, { wobble: 1.1 });
           Back to the start
           <span class="btn__cap" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
         </a>
-        <a class="btn" href={url('/work')}>
+        <a class="btn" href={url('/#work')}>
           See the work
           <span class="btn__cap" aria-hidden="true"><Icon name="arrow-right" size={13} /></span>
         </a>

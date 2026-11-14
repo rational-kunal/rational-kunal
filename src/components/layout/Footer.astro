@@ -1,21 +1,23 @@
 ---
 import { site, nav } from '@/data/site';
 import { url } from '@/lib/url';
-import Socials from './Socials.astro';
-import Icon from './Icon.astro';
+import Socials from '@/components/ui/Socials.astro';
+import Icon from '@/components/ui/Icon.astro';
 
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer">
+<footer class="site-footer" id="contact">
   <div class="wrap">
     <hr class="rule" />
     <div class="foot">
       <div class="foot__lead">
-        <p class="foot__line">
-          Open to work that needs depth on the client and curiosity everywhere else.
-        </p>
-        <Socials primaryOnly />
+        {site.openToWork && (
+          <p class="foot__line">
+            Open to work that needs depth on the client and curiosity everywhere else.
+          </p>
+        )}
+        <Socials labelled size={16} />
       </div>
 
       <nav class="foot__nav" aria-label="Footer">
@@ -28,7 +30,7 @@ const year = new Date().getFullYear();
 
     <div class="foot__base">
       <span class="meta">{site.name} &middot; {year}</span>
-      <a class="meta foot__src" href="https://github.com/rational-kunal" rel="noopener">
+      <a class="meta foot__src" href={`https://github.com/${site.handle}`} rel="noopener">
         Built in the open
         <Icon name="arrow-up-right" size={11} />
       </a>
@@ -84,7 +86,13 @@ const year = new Date().getFullYear();
     gap: 0.3rem;
     text-decoration: none;
   }
+  .foot__src :global(svg) { transition: transform var(--dur-2) var(--ease-out); }
   .foot__src:hover { color: var(--mark); }
+  .foot__src:hover :global(svg) { transform: translate(1.5px, -1.5px); }
+  @media (prefers-reduced-motion: reduce) {
+    .foot__src :global(svg) { transition: none; }
+    .foot__src:hover :global(svg) { transform: none; }
+  }
 
   @media (max-width: 620px) {
     .foot { grid-template-columns: 1fr; gap: 2rem; }
