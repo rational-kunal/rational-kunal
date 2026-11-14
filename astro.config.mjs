@@ -13,7 +13,7 @@ import { rehypeImageDims } from './src/lib/images.ts';
 //     site: 'https://rational-kunal.github.io'   base: '/portfolio'
 // ---------------------------------------------------------------------------
 const SITE = 'https://rational-kunal.github.io';
-const BASE = '/';
+const BASE = '/rational-kunal';
 
 export default defineConfig({
   site: SITE,
@@ -22,7 +22,7 @@ export default defineConfig({
   integrations: [sitemap()],
   markdown: {
     // Reserves space for every local article image, so nothing jumps on load.
-    rehypePlugins: [rehypeImageDims],
+    rehypePlugins: [[rehypeImageDims, { base: BASE }]],
     shikiConfig: {
       // The site is dark only, so code gets one theme and no CSS switch.
       theme: 'github-dark',

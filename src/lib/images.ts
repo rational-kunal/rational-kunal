@@ -58,18 +58,22 @@ type HastNode = { type: string; tagName?: string; properties?: Record<string, un
  * at the full text column fills more than a screen, so one is also marked
  * .is-tall and held to phone width in global.css.
  */
-export function rehypeImageDims() {
+export function rehypeImageDims(options: { base?: string } = {}) {
+  const base = (options.base ?? '/').replace(/\/+$/, '');
   const visit = (node: HastNode): void => {
-    if (node.tagName === 'img' && node.properties) stamp(node.properties);
+    if (node.tagName === 'img' && node.properties) stamp(node.properties, base);
     node.children?.forEach(visit);
   };
   return visit;
 }
 
-function stamp(p: Record<string, unknown>): void {
-  if (typeof p.src !== 'string' || !p.src.startsWith('/') || (p.width && p.height)) return;
+function stamp(p: Record<string, unknown>, base: string): void {
+  // Only local images (/writing/x.gif): not a full URL, not protocol-relative.
+  if (typeof p.src !== 'string' || !p.src.startsWith('/') || p.src.startsWith('//')) return;
+  // Measure against public/ first, then prefix the base the site is served under.
   const size = imageSize(p.src);
-  if (!size) return;
+  p.src = `${base}${p.src}`;
+  if ((p.width && p.height) || !size) return;
   p.width = size.w;
   p.height = size.h;
   if (size.h > size.w * 1.4) p.className = [...[p.className ?? []].flat(), 'is-tall'];

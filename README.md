@@ -185,18 +185,22 @@ curl -s "https://api.github.com/users/rational-kunal/repos?per_page=100" \
 In the repository settings, set **Pages -> Build and deployment -> Source** to
 **GitHub Actions** once, and that is the whole setup.
 
-The site is configured for a **user page** - a repository named
-`rational-kunal.github.io`, served at the domain root. Both values live at the
-top of `astro.config.mjs`:
+The site is configured as a **project page**: the repository is
+`rational-kunal/rational-kunal`, so it is served at
+`https://rational-kunal.github.io/rational-kunal/`. Both values live at the top
+of `astro.config.mjs`:
 
 ```js
 const SITE = 'https://rational-kunal.github.io';
-const BASE = '/';
+const BASE = '/rational-kunal';
 ```
 
-For a **project page** (a repository named anything else), change `BASE` to
-`'/<repo-name>'`. Every internal link runs through `url()` in `src/lib/url.ts`,
-so nothing else needs touching.
+Every internal link runs through `url()` in `src/lib/url.ts`, and the image
+paths inside articles are prefixed by `rehypeImageDims` in `src/lib/images.ts`,
+so `BASE` is the only thing to change.
+
+For a **user page** (a repository named `rational-kunal.github.io`), set `BASE`
+back to `'/'`.
 
 For a custom domain, set `SITE` to it, leave `BASE` as `'/'`, and add a
 `public/CNAME` file containing the domain.
