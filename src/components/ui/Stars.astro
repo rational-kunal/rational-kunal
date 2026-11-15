@@ -3,10 +3,25 @@ import Icon from './Icon.astro';
 interface Props { count: number; }
 const { count } = Astro.props;
 ---
-<span class="stars meta" title={`${count} stars on GitHub`}>
-  <Icon name="star" size={12} />
+<span class="stars" title={`${count} stars on GitHub`}>
+  <Icon name="star" weight="fill" size={14} />
   {count}
 </span>
 <style>
-  .stars { display: inline-flex; align-items: center; gap: 0.28rem; color: var(--ink-3); }
+  /* The one number on a card worth catching at a glance, so it is the one that
+     is lit: a filled accent star and a count at full strength. Everything near
+     it is either quiet metadata or an action pill, and it was getting lost
+     between them. It is not a pill itself, so it never reads as clickable. */
+  .stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    font-weight: 560;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    cursor: default;
+  }
+  .stars :global(svg) { color: var(--mark); }
 </style>

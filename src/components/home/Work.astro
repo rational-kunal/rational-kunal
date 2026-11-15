@@ -62,16 +62,16 @@ const seedOf = (slug: string) => [...slug].reduce((a, c) => a + c.charCodeAt(0),
               <div class="links">
                 <Stars count={p.stars} />
                 <a class="plink" href={p.repo} rel="noopener" target="_blank">
-                  Source <Icon name="arrow-up-right" size={13} />
+                  <Icon name="github-logo" size={15} /> Source
                 </a>
                 {p.demo && (
-                  <a class="plink" href={p.demo} rel="noopener" target="_blank">
-                    Try it <Icon name="arrow-up-right" size={13} />
+                  <a class="plink plink--hot" href={p.demo} rel="noopener" target="_blank">
+                    <Icon name="play" size={15} /> Try it
                   </a>
                 )}
                 {p.article && (
                   <a class="plink" href={url(`/writing/${p.article}`)}>
-                    Write-up <Icon name="arrow-right" size={13} />
+                    <Icon name="article" size={15} /> Write-up
                   </a>
                 )}
               </div>
@@ -107,11 +107,11 @@ const seedOf = (slug: string) => [...slug].reduce((a, c) => a + c.charCodeAt(0),
               <span class="meta">{p.stack.slice(0, 3).join(', ')}</span>
               <span class="links">
                 <a class="plink" href={p.repo} rel="noopener" target="_blank">
-                  Source <Icon name="arrow-up-right" size={13} />
+                  <Icon name="github-logo" size={15} /> Source
                 </a>
                 {p.demo && (
-                  <a class="plink" href={p.demo} rel="noopener" target="_blank">
-                    Try it <Icon name="arrow-up-right" size={13} />
+                  <a class="plink plink--hot" href={p.demo} rel="noopener" target="_blank">
+                    <Icon name="play" size={15} /> Try it
                   </a>
                 )}
               </span>
@@ -161,22 +161,53 @@ const seedOf = (slug: string) => [...slug].reduce((a, c) => a + c.charCodeAt(0),
     border-radius: var(--r-shell);
   }
 
-  /* The links every card ends with: plain words, an arrow that points out. */
-  .links { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 1.25rem; }
+  /* The actions every card ends with: a small pill, an icon, then the word.
+     "Try it" is the one worth clicking first, so it is the one that is lit. The
+     pill itself never moves on hover (a moving hit box flickers at its edge);
+     only its surface and its icon respond. */
+  .links { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+  /* On a featured card the star count leads the row. It is a number, not an
+     action, so it gets a little more air before the first pill. */
+  .links > :global(.stars) { margin-right: 0.4rem; }
   .plink {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
+    padding: 0.38rem 0.85rem 0.38rem 0.7rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-pill);
     font-size: var(--t-small);
     font-weight: 520;
+    line-height: 1.2;
     color: var(--ink);
     text-decoration: none;
-    transition: color var(--dur-1) var(--ease);
+    white-space: nowrap;
+    transition:
+      color var(--dur-1) var(--ease),
+      background var(--dur-1) var(--ease),
+      border-color var(--dur-1) var(--ease);
   }
-  .plink:hover { color: var(--mark); }
-  .plink :global(svg) { transition: transform var(--dur-1) var(--ease); }
-  .plink:hover :global(svg) { transform: translate(1.5px, -1.5px); }
-  .plink:hover :global(svg[data-icon='arrow-right']) { transform: translateX(2px); }
+  .plink :global(svg) { flex: none; transition: transform var(--dur-2) var(--ease-out); }
+  .plink:hover { background: var(--shell); border-color: var(--ink-3); }
+  .plink:active { background: var(--rule-soft); }
+
+  .plink--hot {
+    color: var(--mark);
+    border-color: color-mix(in srgb, var(--mark) 45%, transparent);
+    background: var(--mark-wash);
+  }
+  .plink--hot:hover {
+    color: var(--mark-ink);
+    background: var(--mark);
+    border-color: var(--mark);
+  }
+
+  /* Each glyph does one small thing that matches what it means. */
+  @media (prefers-reduced-motion: no-preference) {
+    .plink:hover :global(svg[data-icon='github-logo']) { transform: rotate(-8deg) scale(1.08); }
+    .plink:hover :global(svg[data-icon='play'])        { transform: translateX(1.5px) scale(1.08); }
+    .plink:hover :global(svg[data-icon='article'])     { transform: translateY(-1px) scale(1.08); }
+  }
 
   /* --- Featured ------------------------------------------------------------ */
   .cases { display: grid; gap: clamp(1rem, 2vw, 1.5rem); }
@@ -344,6 +375,6 @@ const seedOf = (slug: string) => [...slug].reduce((a, c) => a + c.charCodeAt(0),
     100%    { box-shadow: 0 0 0 2px transparent, 0 0 0 12px transparent; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .tile__stage--shot :global(.tile__peek), .plink :global(svg) { transition: none; }
+    .tile__stage--shot :global(.tile__peek), .plink, .plink :global(svg) { transition: none; }
   }
 </style>

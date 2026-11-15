@@ -1,7 +1,6 @@
 ---
-import { nav, site, resumeAttrs } from '@/data/site';
+import { nav, site } from '@/data/site';
 import { url } from '@/lib/url';
-import Icon from '@/components/ui/Icon.astro';
 ---
 
 <header class="site-nav">
@@ -17,11 +16,6 @@ import Icon from '@/components/ui/Icon.astro';
       ))}
     </ul>
 
-    <a class="btn btn--solid rail__cta" href={url(site.resume)} {...resumeAttrs}>
-      Résumé
-      <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
-    </a>
-
     <!-- Mobile menu. A details element, so the whole thing works without JS. -->
     <details class="burger">
       <summary aria-label="Menu">
@@ -32,10 +26,6 @@ import Icon from '@/components/ui/Icon.astro';
         <ul>
           {nav.map((item) => <li><a href={url(item.href)}>{item.label}</a></li>)}
         </ul>
-        <a class="btn btn--solid" href={url(site.resume)} {...resumeAttrs}>
-          Résumé
-          <span class="btn__cap" aria-hidden="true"><Icon name="file-text" size={13} /></span>
-        </a>
       </div>
     </details>
   </nav>
@@ -128,8 +118,6 @@ import Icon from '@/components/ui/Icon.astro';
   }
   .rail__link:hover { color: var(--ink); background: var(--shell); }
 
-  .rail__cta { margin-left: 0.35rem; }
-
   /* --- Mobile ----------------------------------------------------------- */
   .burger { display: none; position: relative; }
   .burger summary {
@@ -169,7 +157,7 @@ import Icon from '@/components/ui/Icon.astro';
     -webkit-backdrop-filter: blur(22px);
     box-shadow: var(--lift-hi);
   }
-  .burger__sheet ul { list-style: none; padding: 0; margin: 0 0 0.6rem; }
+  .burger__sheet ul { list-style: none; padding: 0; margin: 0; }
   .burger__sheet ul a {
     display: block;
     padding: 0.65rem 0.8rem;
@@ -178,17 +166,13 @@ import Icon from '@/components/ui/Icon.astro';
     font-size: 0.95rem;
   }
   .burger__sheet ul a:hover { background: var(--shell); }
-  .burger__sheet .btn { width: 100%; justify-content: space-between; }
 
-  .burger[open] .burger__sheet > ul > li,
-  .burger[open] .burger__sheet > .btn {
+  .burger[open] .burger__sheet > ul > li {
     animation: sheet-in var(--dur-2) var(--ease-out) both;
   }
   .burger[open] .burger__sheet > ul > li:nth-child(1) { animation-delay: 30ms; }
   .burger[open] .burger__sheet > ul > li:nth-child(2) { animation-delay: 70ms; }
   .burger[open] .burger__sheet > ul > li:nth-child(3) { animation-delay: 110ms; }
-  .burger[open] .burger__sheet > ul > li:nth-child(4) { animation-delay: 150ms; }
-  .burger[open] .burger__sheet > .btn               { animation-delay: 190ms; }
 
   @keyframes sheet-in {
     from { opacity: 0; transform: translateY(10px); }
@@ -196,7 +180,7 @@ import Icon from '@/components/ui/Icon.astro';
   }
 
   @media (max-width: 860px) {
-    .rail__links, .rail__cta { display: none; }
+    .rail__links { display: none; }
     .burger { display: block; }
     .rail { height: 56px; padding-right: 0.42rem; }
   }
@@ -207,6 +191,6 @@ import Icon from '@/components/ui/Icon.astro';
 
   @media (prefers-reduced-motion: reduce) {
     .burger__bar { transition: none; }
-    .burger__sheet > ul > li, .burger__sheet > .btn { animation: none; }
+    .burger__sheet > ul > li { animation: none; }
   }
 </style>

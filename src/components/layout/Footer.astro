@@ -30,10 +30,11 @@ const year = new Date().getFullYear();
 
     <div class="foot__base">
       <span class="meta">{site.name} &middot; {year}</span>
-      <a class="meta foot__src" href={`https://github.com/${site.handle}`} rel="noopener">
-        Built in the open
-        <Icon name="arrow-up-right" size={11} />
-      </a>
+      <span class="meta foot__made">
+        Built with
+        <Icon name="heart" size={12} />
+        and a little AI
+      </span>
     </div>
   </div>
 </footer>
@@ -80,18 +81,21 @@ const year = new Date().getFullYear();
     padding-top: 1.2rem;
     border-top: 1px solid var(--rule-soft);
   }
-  .foot__src {
+  .foot__made {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    text-decoration: none;
+    gap: 0.4rem;
   }
-  .foot__src :global(svg) { transition: transform var(--dur-2) var(--ease-out); }
-  .foot__src:hover { color: var(--mark); }
-  .foot__src:hover :global(svg) { transform: translate(1.5px, -1.5px); }
-  @media (prefers-reduced-motion: reduce) {
-    .foot__src :global(svg) { transition: none; }
-    .foot__src:hover :global(svg) { transform: none; }
+  /* The one splash of colour down here: a lit heart, with a slow beat. */
+  .foot__made :global(svg) { color: var(--mark); }
+  @media (prefers-reduced-motion: no-preference) {
+    .foot__made :global(svg) { animation: beat 2.8s var(--ease-out) infinite; transform-origin: center; }
+  }
+  @keyframes beat {
+    0%, 70%, 100% { transform: scale(1); }
+    78%           { transform: scale(1.22); }
+    86%           { transform: scale(1); }
+    92%           { transform: scale(1.14); }
   }
 
   @media (max-width: 620px) {

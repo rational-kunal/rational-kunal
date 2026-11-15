@@ -4,8 +4,10 @@
  * No icon font and no runtime are shipped.
  *
  * Phosphor Light for everything it carries, so the stroke weight stays
- * consistent. `brand` pulls a logo from Simple Icons instead, for the ones
- * Phosphor does not have (dev.to, Codeforces, most of the skills).
+ * consistent. `weight="fill"` is the one exception, for a glyph that has to
+ * read as lit (the star count). `brand` pulls a logo from Simple Icons
+ * instead, for the ones Phosphor does not have (dev.to, Codeforces, most of
+ * the skills).
  */
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -14,12 +16,13 @@ interface Props {
   name: string;
   brand?: boolean;
   size?: number;
+  weight?: 'light' | 'fill';
 }
-const { name, brand = false, size = 18 } = Astro.props;
+const { name, brand = false, size = 18, weight = 'light' } = Astro.props;
 
 const spec = brand
   ? `simple-icons/icons/${name}.svg`
-  : `@phosphor-icons/core/assets/light/${name}-light.svg`;
+  : `@phosphor-icons/core/assets/${weight}/${name}-${weight}.svg`;
 
 let file: string;
 try {

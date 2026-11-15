@@ -40,14 +40,25 @@ const list = primaryOnly ? socials.filter((s) => s.primary) : socials;
     transition:
       color var(--dur-1) var(--ease),
       border-color var(--dur-1) var(--ease),
-      background var(--dur-1) var(--ease),
-      transform var(--dur-1) var(--ease);
+      background var(--dur-1) var(--ease);
   }
-  .socials__item:hover {
+  /* The pill stays exactly where it is. It used to lift 2px on hover, which
+     slid its bottom edge out from under the cursor: hover a pill low down and
+     it jumped up, lost the hover, dropped back, and flickered. Now only its
+     surface and its icon respond. */
+  .socials__item :global(svg) {
+    flex: none;
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .socials__item:hover,
+  .socials__item:focus-visible {
     color: var(--mark);
-    border-color: var(--rule);
+    border-color: color-mix(in srgb, var(--mark) 45%, transparent);
     background: var(--mark-wash);
-    transform: translateY(-2px);
+  }
+  .socials__item:active { background: color-mix(in srgb, var(--mark) 20%, transparent); }
+  @media (prefers-reduced-motion: no-preference) {
+    .socials__item:hover :global(svg) { transform: scale(1.18) rotate(-6deg); }
   }
   .socials--labelled { gap: 0.5rem; }
   .socials--labelled .socials__item {
@@ -60,7 +71,6 @@ const list = primaryOnly ? socials.filter((s) => s.primary) : socials;
     text-decoration: none;
   }
   @media (prefers-reduced-motion: reduce) {
-    .socials__item { transition: none; }
-    .socials__item:hover { transform: none; }
+    .socials__item, .socials__item :global(svg) { transition: none; }
   }
 </style>

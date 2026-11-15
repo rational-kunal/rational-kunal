@@ -130,7 +130,8 @@ const jsonLd = {
   }
   .article__tags li { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-3); }
 
-  .article__foot { margin-top: 3.5rem; }
+  /* Room under the byline, so the page does not run straight into the site footer. */
+  .article__foot { margin-top: 3.5rem; padding-bottom: clamp(3.5rem, 2.5rem + 5vw, 6rem); }
   .article__foot .rule { margin-bottom: 1.8rem; }
   .article__proj { margin: 0 0 1.4rem; color: var(--ink-2); }
   .article__footrow {
