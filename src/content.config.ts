@@ -18,6 +18,8 @@ const writing = defineCollection({
     readingTime: z.number().optional(),
     /** Set when the piece also lives on dev.to, so the article can link back. */
     devto: z.string().url().optional(),
+    /** Set when AI helped write the piece, so the byline says so. */
+    ai: z.boolean().default(false),
     draft: z.boolean().default(false),
   }),
 });

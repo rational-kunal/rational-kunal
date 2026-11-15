@@ -66,7 +66,6 @@ body::after {
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
-.wrap--text { max-width: 760px; }
 
 .section { padding-block: var(--section-y); }
 .section + .section { padding-top: 0; }
@@ -287,16 +286,165 @@ body::after {
 .prose ul, .prose ol { padding-left: 1.3em; }
 .prose li + li { margin-top: 0.4em; }
 .prose li::marker { color: var(--ink-3); }
-.prose img { border-radius: var(--r-chip); border: 1px solid var(--rule-soft); margin-inline: auto; }
+.prose img, .prose video { border-radius: var(--r-chip); border: 1px solid var(--rule-soft); margin-inline: auto; }
 .prose img.is-tall { max-width: min(100%, 320px); height: auto; }
+.prose video { background: var(--paper-sunk); }
+
+/* A phone screen. Every screenshot and recording is cropped to the iPhone's
+   display and saved at 400 x 870 (560 x 1218 for stills) before it lands in
+   public/, then shown here at one width in one bezel, so a post's phones all
+   line up at the same size. */
+.prose .phone {
+  width: min(100%, 280px);
+  height: auto;
+  aspect-ratio: 400 / 870;
+  object-fit: cover;
+  border: 0;
+  border-radius: 13% / 6%;
+  background: var(--paper-sunk);
+  box-shadow: 0 0 0 5px var(--bezel), 0 0 0 6px var(--rule);
+  margin-block: 6px;
+}
+
+/* A picture or recording with a caption under it. */
+.prose figure { margin: 0; display: grid; justify-items: center; gap: 0.7rem; }
+.prose figcaption {
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--ink-3);
+  text-align: center;
+  max-width: 52ch;
+}
+
+/* Collapsible sections: a native <details>, so they work without JS. */
+.prose details {
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--r-chip);
+  background: var(--shell);
+  padding-inline: 1.1rem;
+}
+.prose details + details { margin-top: 0.6rem; }
+.prose details[open] { padding-bottom: 1.25rem; }
+.prose details > * + * { margin-top: 1em; }
+.prose summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  padding-block: 0.95rem;
+  font-weight: 560;
+  line-height: 1.45;
+  cursor: pointer;
+  list-style: none;
+}
+.prose summary::-webkit-details-marker { display: none; }
+.prose summary::before { content: '+'; flex: none; width: 1ch; color: var(--mark); font-family: var(--font-mono); }
+.prose details[open] > summary::before { content: '\2212'; }
+.prose details[open] > summary { padding-bottom: 0; }
 .prose hr { border: 0; border-top: 1px solid var(--rule-soft); margin-block: 2.6em; }
 
-.prose blockquote {
-  border-left: 2px solid var(--mark);
-  padding-left: 1.1rem;
-  color: var(--ink-2);
-  font-style: italic;
+/* ===========================================================================
+   Annotated article. The strokes are drawn at build time by
+   src/lib/scribbles.ts; this is how they sit on the page. The text column
+   keeps reading width, and on a wide screen the space to its right is a
+   margin for handwritten notes.
+   =========================================================================== */
+.scribble path {
+  fill: none;
+  stroke: var(--mark);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
+
+/* A scribbled underline under each section heading. */
+.prose h2 { position: relative; width: fit-content; }
+.prose h2 > .scribble { position: absolute; left: 0; bottom: -0.55rem; width: 100%; height: 14px; }
+.prose h2 > .scribble path { stroke-width: 2; }
+.prose h2 + * { margin-top: 1.2em; }
+
+/* A highlighter pass over the key sentence. Opt in per sentence with <mark>,
+   so bold text elsewhere stays plain bold. */
+.prose mark {
+  color: inherit;
+  font-weight: 600;
+  padding: 0.05em 0.2em;
+  border-radius: 0.5em 0.2em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  background: linear-gradient(
+    100deg,
+    transparent 0.2em,
+    color-mix(in srgb, var(--mark) 34%, transparent) 0.35em,
+    color-mix(in srgb, var(--mark) 22%, transparent) 96%,
+    transparent
+  );
+}
+
+/* A callout (a Markdown quote) gets a box sketched round it. */
+.prose blockquote { position: relative; padding: 1rem 1.3rem; }
+.prose blockquote > .scribble { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.prose blockquote > .scribble path { stroke: var(--ink-3); stroke-width: 1.4; }
+
+/* Handwriting: margin notes (<aside class="note">) and labels on a picture (<p class="hand">, in a .stage). */
+.prose .note, .prose .hand {
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: 1.02rem;
+  line-height: 1.3;
+  color: var(--mark);
+}
+.prose .note { display: flex; align-items: flex-start; gap: 0.35rem; max-width: 34ch; }
+.prose .note > .scribble { flex: none; width: 58px; height: 34px; }
+.prose .note .scribble path, .prose .stage .scribble path { stroke-width: 1.6; }
+
+/* With no margin to sit in, a note reads above its paragraph and points down at it. */
+@media (max-width: 1139.98px) {
+  .prose .note { align-items: flex-end; gap: 0.2rem; }
+  .prose .note > .scribble { order: 1; width: 40px; height: 26px; transform: rotate(-100deg); }
+  .prose .note + * { margin-top: 0.5em; }
+}
+/* On a wide screen it floats out into the margin, level with the top of the
+   block after it. --at moves it further down, to point at one line:
+     <aside class="note" style="--at: 17rem">…</aside> */
+@media (min-width: 1140px) {
+  .prose .note {
+    float: right;
+    clear: right;
+    width: 13.5rem;
+    margin-top: calc(1.3em + var(--at, 0rem));
+    margin-right: -17rem;
+    transform: rotate(-2.5deg);
+  }
+}
+
+/* A stage: one picture with a handwritten label to its right and an arrow
+   into it. --at sets how far down the label sits (16% by default), and the
+   arrow lands about 100px lower, so --at picks the spot it points at.
+     <div class="stage" style="--at: 80%"> <img class="phone" …> <p class="hand">…</p> </div> */
+.prose .stage { position: relative; padding-right: 170px; }
+/* A fixed width: the stage shrinks to fit the phone, so a percentage here has nothing to resolve against. */
+.prose .stage .phone, .prose .board .phone { width: 280px; max-width: 100%; margin: 6px; }
+.prose .stage .hand { position: absolute; left: 312px; top: var(--at, 16%); width: 150px; margin: 0; transform: rotate(-4deg); }
+.prose .stage .scribble--hand { position: absolute; left: 228px; top: calc(var(--at, 16%) + 3.3rem); width: 92px; height: 56px; }
+@media (max-width: 560px) {
+  .prose .stage { display: grid; justify-self: stretch; padding: 0; }
+  .prose .stage .hand { position: static; order: -1; width: auto; margin-bottom: 0.4rem; transform: none; }
+  .prose .stage .scribble--hand { display: none; }
+}
+
+/* A board: pictures side by side, each with its explanation underneath. On a
+   wide screen it spreads into the note margin, so two staged phones fit at
+   full size. */
+.prose .board {
+  clear: both;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 450px), 1fr));
+  gap: 3.5rem 2rem;
+}
+@media (min-width: 1140px) { .prose .board { width: calc(100% + 17rem); } }
+.prose .board figure { justify-items: start; align-content: start; gap: 1.1rem; }
+.prose .board figcaption { display: grid; gap: 0.6em; max-width: 450px; text-align: left; color: var(--ink-2); }
+.prose .board figcaption b { color: var(--ink); font-weight: 600; }
 
 .prose :not(pre) > code {
   font-family: var(--font-mono);

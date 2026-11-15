@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { rehypeImageDims } from './src/lib/images.ts';
+import { rehypeScribbles } from './src/lib/scribbles.ts';
 
 // ---------------------------------------------------------------------------
 // DEPLOY TARGET — the only two lines you edit when the hosting repo changes.
@@ -26,7 +27,8 @@ export default defineConfig({
   integrations: [sitemap()],
   markdown: {
     // Reserves space for every local article image, so nothing jumps on load.
-    rehypePlugins: [[rehypeImageDims, { base: BASE }]],
+    // Then draws the article's underlines, boxes and arrows (see src/lib/scribbles.ts).
+    rehypePlugins: [[rehypeImageDims, { base: BASE }], rehypeScribbles],
     shikiConfig: {
       // The site is dark only, so code gets one theme and no CSS switch.
       theme: 'github-dark',

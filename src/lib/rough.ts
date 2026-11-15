@@ -31,6 +31,16 @@ export function seeds(seed: number): () => number {
   return () => (s = (s * 1103515245 + 12345) % 2147483647);
 }
 
+/**
+ * A seed from a piece of text (FNV-1a), so a stroke tied to a heading or a
+ * post redraws the same until that text changes.
+ */
+export function seedOf(text: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193);
+  return h >>> 0;
+}
+
 export type Pen = {
   /** How far the stroke is allowed to wander, in user units. */
   wobble?: number;

@@ -19,6 +19,7 @@
   --mark:         #ee5d4d;  /* the portrait's #800000, lifted to clear AA on ink */
   --mark-ink:     #1a0806;  /* text sitting on --mark */
   --mark-wash:    rgba(238, 93, 77, 0.12);
+  --bezel:        #0b0a07;  /* a phone's frame, darker than any paper */
   --rule:         rgba(244, 236, 214, 0.17);
   --rule-soft:    rgba(244, 236, 214, 0.085);
   --shell:        rgba(244, 236, 214, 0.045);
@@ -43,6 +44,9 @@
      and a little odder as it gets bigger. */
   --font-display: 'Bricolage Grotesque Variable', 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', monospace;
+  /* Margin notes and labels on an article, written as if by hand beside the
+     drawn strokes. Loaded only by the article layout. */
+  --font-hand: 'Shantell Sans', 'Bradley Hand', cursive;
 
   --t-h1:      clamp(2.1rem, 1.1rem + 4.1vw, 3.5rem);
   --t-h2:      clamp(1.65rem, 1.1rem + 2.3vw, 2.4rem);
