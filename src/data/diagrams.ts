@@ -89,6 +89,35 @@ export const diagrams: Partial<Record<string, Diagram>> = {
   },
 
   /* ----------------------------------------------------------------------- */
+  nottheinstagram: {
+    seed: 3907,
+    width: 760,
+    height: 346,
+    caption:
+      'Sideloadly injects the framework into a decrypted Instagram and installs it. When the app opens, each hook first checks that the method it wants still has the signature it expects, and only then swaps in the slower version: a feed that waits, a Reels tab that opens on a pause. If an update changed the method, that one feature stays off and the app works as normal.',
+    nodes: [
+      { id: 'fw',     x: 24,  y: 34,  w: 156, h: 58, label: 'The framework', sub: 'one file per feature' },
+      { id: 'ipa',    x: 24,  y: 136, w: 156, h: 58, label: 'Decrypted .ipa' },
+      { id: 'side',   x: 222, y: 85,  w: 148, h: 58, label: 'Sideloadly', sub: 'inject + sign' },
+      { id: 'open',   x: 432, y: 85,  w: 152, h: 58, label: 'Instagram opens', sub: 'framework loads' },
+      { id: 'check',  x: 432, y: 228, w: 152, h: 60, label: 'Signature matches?', sub: 'checked per hook', emphasis: true },
+      { id: 'hook',   x: 626, y: 228, w: 110, h: 60, label: 'Swap it in', sub: 'the slow version' },
+      { id: 'off',    x: 222, y: 228, w: 148, h: 60, label: 'Leave it alone', sub: 'that feature is off' },
+    ],
+    edges: [
+      { from: 'fw',    to: 'side',  via: 'r-l' },
+      { from: 'ipa',   to: 'side',  via: 'r-l' },
+      { from: 'side',  to: 'open',  via: 'r-l', label: 'install' },
+      { from: 'open',  to: 'check', via: 'b-t' },
+      { from: 'check', to: 'hook',  via: 'r-l', label: 'yes', accent: true },
+      { from: 'check', to: 'off',   via: 'l-r', label: 'no', dashed: true },
+    ],
+    notes: [
+      { x: 380, y: 328, text: 'an Instagram update can switch off one feature. it cannot break the app.', anchor: 'middle' },
+    ],
+  },
+
+  /* ----------------------------------------------------------------------- */
   noreels: {
     seed: 7734,
     width: 760,

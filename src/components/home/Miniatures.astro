@@ -3,8 +3,9 @@
  * The top of the page: six small scenes, each one showing what a project does
  * rather than saying it. A button presses into its hard shadow, SwiftUI-style
  * code renders into a terminal and only the changed cells are rewritten, two
- * peers meet through a server that then steps aside, a reel is crossed out of
- * a feed, a price ticks down, video segments stream into a screen.
+ * peers meet through a server that then steps aside, a feed stops after three
+ * posts and makes you wait, a price ticks down, video segments stream into a
+ * screen.
  *
  * All CSS, no script. Each tile is a plain link down to that project in the
  * Work section. The un-animated state is a meaningful still frame, and motion
@@ -25,7 +26,7 @@ function scene(slug: string) {
 const neo = scene('neobrutalism');
 const blink = scene('blinkui');
 const call = scene('oneonone');
-const reel = scene('noreels');
+const ig = scene('nottheinstagram');
 const keem = scene('keemat');
 const chal = scene('chalchitra');
 ---
@@ -101,8 +102,8 @@ const chal = scene('chalchitra');
     <span class="label"><span class="name">OneOnOne</span><span class="stars">WebRTC</span></span>
   </a>
 
-  <!-- 4. NoReels -->
-  <a class="tile t-reel" href={reel.href} aria-label="NoReelsOnInstagram. Read about it below.">
+  <!-- 4. NotTheInstagram -->
+  <a class="tile t-ig" href={ig.href} aria-label="NotTheInstagram. Read about it below.">
     <svg class="frame" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M2.3 1.5 C30 2.2 70 1 97.8 2 C98.9 30 97.5 70 98.5 98.6 C70 97.9 30 99.2 1.4 98.1 C2.6 70 1.1 30 2.3 1.5 Z"/><path d="M1.5 2.1 C34 1 66 2.5 98.6 1.3 C97.9 34 99 66 98 98.2 C66 99.1 34 98 2.1 98.8 C1.2 66 2.4 34 1.5 2.1 Z"/></svg>
     <span class="stage" aria-hidden="true">
       <svg viewBox="0 0 120 164">
@@ -110,34 +111,31 @@ const chal = scene('chalchitra');
         <path class="ink" style="fill:var(--paper)" stroke-width="1.8" d="M41 8.2 Q31.6 8 32.3 17.4 L33 145 Q32.8 154.4 41.5 153.8 L79.6 154.3 Q88.6 154 87.8 145 L88.2 17.2 Q88.5 8.6 79.4 8 Z"/>
         <path class="ink" d="M54 12.4 H66"/>
         <g clip-path="url(#mini-screen)">
-          <g>
+          <!-- three posts, then the wait under them -->
+          <g class="ig-feed">
             <rect x="38" y="21" width="44" height="30" rx="3" class="sunk"/>
             <rect x="38" y="21" width="44" height="30" rx="3" class="ink"/>
             <path class="ink" d="M40 47 L50 37 L56 43 L62 35 L80 47"/>
             <circle class="ink-f" cx="47" cy="29" r="2.4"/>
+            <rect x="38" y="57" width="44" height="30" rx="3" class="sunk"/>
+            <rect x="38" y="57" width="44" height="30" rx="3" class="ink"/>
+            <path class="ink" d="M41 83 L53 72 L60 78 L66 73 L79 83"/>
+            <rect x="38" y="93" width="44" height="30" rx="3" class="sunk"/>
+            <rect x="38" y="93" width="44" height="30" rx="3" class="ink"/>
+            <circle class="ink-f" cx="71" cy="102" r="2.4"/>
+            <path class="ink" d="M40 118 L52 108 L60 114 L80 118"/>
+            <circle class="soft" cx="60" cy="154" r="9"/>
+            <circle class="mk ig-wait" stroke-width="2.6" pathLength="1" cx="60" cy="154" r="9" transform="rotate(-90 60 154)"/>
+            <path class="soft" d="M47 173 H73 M51 178 H69"/>
           </g>
-          <g class="reel-g">
-            <rect x="38" y="57" width="44" height="48" rx="3" class="ink-f"/>
-            <path d="M55.5 72.5 L55.5 89.5 L68.5 81 Z" style="fill:var(--paper)"/>
-            <path class="soft" style="stroke:var(--paper)" d="M42 99 H56"/>
-            <g class="x">
-              <path class="mk" stroke-width="3.6" pathLength="1" d="M33.5 53.5 Q58 78 86.5 109"/>
-              <path class="mk" stroke-width="3.6" pathLength="1" d="M86 53 Q61 79 34.5 108.5"/>
-            </g>
-          </g>
-          <g class="below">
-            <rect x="38" y="111" width="44" height="30" rx="3" class="sunk"/>
-            <rect x="38" y="111" width="44" height="30" rx="3" class="ink"/>
-            <path class="ink" d="M41 137 L53 126 L60 132 L66 127 L79 137"/>
-            <rect x="38" y="147" width="44" height="30" rx="3" class="sunk"/>
-            <rect x="38" y="147" width="44" height="30" rx="3" class="ink"/>
-            <circle class="ink-f" cx="71" cy="156" r="2.4"/>
-            <path class="ink" d="M40 172 L52 162 L60 168 L80 172"/>
-          </g>
+          <!-- the usage label: time spent today -->
+          <rect x="45" y="135.5" width="30" height="6" rx="3" style="fill:var(--paper)"/>
+          <rect x="45" y="135.5" width="30" height="6" rx="3" class="soft"/>
+          <path class="mk" stroke-width="1.4" d="M49 138.5 H57"/>
         </g>
       </svg>
     </span>
-    <span class="label"><span class="name">NoReels</span><span class="stars">.ipa</span></span>
+    <span class="label"><span class="name">NotThe<wbr />Instagram</span><span class="stars">.ipa</span></span>
   </a>
 
   <!-- 5. keemat -->
@@ -205,14 +203,14 @@ const chal = scene('chalchitra');
   grid-template-rows: 196px 196px 196px;
   grid-template-areas:
     "neo  neo  blink blink"
-    "neo  neo  call  reel"
-    "keem chal chal  reel";
+    "neo  neo  call  ig"
+    "keem chal chal  ig";
   gap: 14px;
 }
 .bento .t-neo   { grid-area: neo; }
 .bento .t-blink { grid-area: blink; }
 .bento .t-call  { grid-area: call; }
-.bento .t-reel  { grid-area: reel; }
+.bento .t-ig    { grid-area: ig; }
 .bento .t-keem  { grid-area: keem; }
 .bento .t-chal  { grid-area: chal; }
 
@@ -223,8 +221,8 @@ const chal = scene('chalchitra');
     grid-template-areas:
       "neo   neo"
       "blink blink"
-      "reel  call"
-      "reel  keem"
+      "ig    call"
+      "ig    keem"
       "chal  chal";
     gap: 10px;
   }
@@ -343,11 +341,17 @@ const chal = scene('chalchitra');
 .bk-dirty { inset: -3px; position: absolute; border: 1px dashed var(--term-mark); border-radius: 3px; opacity: 0; }
 
 /* ======================================================================
-   3. NoReels: a reel in the feed gets crossed out and swiped away
+   3. NotTheInstagram: the feed scrolls three posts, then stops and makes
+   you wait while a ring fills. Still frame: the third post and the wait.
    ====================================================================== */
-.reel-g, .x path, .below { transform-box: fill-box; }
-.reel-g { transform-origin: 50% 50%; }
-.x path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.ig-feed { transform: translateY(-72px); }
+.ig-wait { stroke-dasharray: 1; stroke-dashoffset: .35; }
+/* The name is long for a quarter-width tile: the tag goes first, then the
+   name breaks after "NotThe", so it never runs past the frame. */
+@container (max-width: 230px) { .t-ig .stars { display: none; } }
+.t-ig .name { line-height: 1.1; }
+/* The same for OneOnOne on a phone, where its tag no longer fits beside it. */
+@container (max-width: 170px) { .t-call .stars { display: none; } }
 
 /* ======================================================================
    4. OneOnOne: two peers meet via a server, which then steps aside
@@ -432,20 +436,18 @@ const chal = scene('chalchitra');
     58% { opacity: 1; } 62% { opacity: 0; } 64% { opacity: 1; } 68% { opacity: 0; }
   }
 
-  /* NoReels, 7s */
-  .x path { animation: x-draw 7s ease-in-out infinite; }
-  .x path + path { animation-delay: .25s; }
-  .reel-g { animation: reel-away 7s cubic-bezier(.5,0,.2,1) infinite; }
-  .below { animation: feed-up 7s cubic-bezier(.3,.7,.2,1) infinite; }
-  @keyframes x-draw { 0%, 10% { stroke-dashoffset: 1; } 26%, 88% { stroke-dashoffset: 0; } 89%, 100% { stroke-dashoffset: 1; } }
-  @keyframes reel-away {
-    0%, 40% { transform: none; opacity: 1; }
-    54% { transform: translateX(-74px) rotate(-10deg); opacity: 0; }
-    88% { transform: translateX(-74px) rotate(-10deg); opacity: 0; }
-    89% { transform: none; opacity: 0; }
+  /* NotTheInstagram, 8s: scroll, scroll, stop, wait, start over */
+  .ig-feed { animation: ig-feed 8s cubic-bezier(.5,0,.2,1) infinite; }
+  .ig-wait { animation: ig-wait 8s linear infinite; }
+  @keyframes ig-feed {
+    0%, 10% { transform: none; opacity: 1; }
+    20%, 27% { transform: translateY(-36px); }
+    37%, 90% { transform: translateY(-72px); opacity: 1; }
+    94% { transform: translateY(-72px); opacity: 0; }
+    95% { transform: none; opacity: 0; }
     100% { transform: none; opacity: 1; }
   }
-  @keyframes feed-up { 0%, 50% { transform: none; } 62%, 88% { transform: translateY(-54px); } 89%, 100% { transform: none; } }
+  @keyframes ig-wait { 0%, 38% { stroke-dashoffset: 1; } 86%, 100% { stroke-dashoffset: 0; } }
 
   /* OneOnOne, 9s */
   .pk-a { animation: pk-a 9s ease-in-out infinite; }

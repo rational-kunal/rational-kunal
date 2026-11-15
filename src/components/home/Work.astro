@@ -60,7 +60,7 @@ const seedOf = (slug: string) => [...slug].reduce((a, c) => a + c.charCodeAt(0),
                 <p class="meta">{p.stack.join(', ')}</p>
               </div>
               <div class="links">
-                <Stars count={p.stars} />
+                {p.stars > 0 && <Stars count={p.stars} />}
                 <a class="plink" href={p.repo} rel="noopener" target="_blank">
                   <Icon name="github-logo" size={15} /> Source
                 </a>
@@ -99,7 +99,7 @@ const seedOf = (slug: string) => [...slug].reduce((a, c) => a + c.charCodeAt(0),
           <div class="tile__body">
             <div class="tile__top">
               <h4 class="tile__name">{p.name}</h4>
-              <Stars count={p.stars} />
+              {p.stars > 0 && <Stars count={p.stars} />}
             </div>
             <p class="tile__tag">{p.tagline}</p>
             <p class="tile__what">{p.what}</p>
@@ -112,6 +112,11 @@ const seedOf = (slug: string) => [...slug].reduce((a, c) => a + c.charCodeAt(0),
                 {p.demo && (
                   <a class="plink plink--hot" href={p.demo} rel="noopener" target="_blank">
                     <Icon name="play" size={15} /> Try it
+                  </a>
+                )}
+                {p.article && (
+                  <a class="plink" href={url(`/writing/${p.article}`)}>
+                    <Icon name="article" size={15} /> Write-up
                   </a>
                 )}
               </span>

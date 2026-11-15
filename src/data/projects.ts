@@ -87,6 +87,22 @@ export const projects: Project[] = [
     mini: ['wake up', 'fetch price', 'local store'],
   },
   {
+    slug: 'nottheinstagram',
+    name: 'NotTheInstagram',
+    tagline: 'Instagram, with friction added to the endless parts.',
+    what: 'A framework injected into Instagram on my own phone. The home feed waits after every three posts, the Reels tab opens on a pause and each reel waits a little longer than the last, while DMs, posts, stories and search work as before. An AI coding agent did most of the digging through the app.',
+    repo: gh('NotTheInstagram'),
+    stars: 0,
+    stack: ['Objective-C', 'Method swizzling', 'FLEX', 'Hopper', 'Sideloadly'],
+    featured: true,
+    shot: {
+      src: '/projects/nottheinstagram/paused.png',
+      alt: 'The Reels tab in Instagram opened on a pause screen: "Reels are paused", with a "Continue for this session" button.',
+    },
+    mini: ['inject', 'check + hook', 'slow feed'],
+    article: 'make-instagram-boring-with-an-ai-agent',
+  },
+  {
     slug: 'noreels',
     name: 'NoReelsOnInstagram',
     tagline: 'Reverse engineering Instagram to switch reels off.',
@@ -94,7 +110,6 @@ export const projects: Project[] = [
     repo: gh('NoReelsOnInstagram'),
     stars: 8,
     stack: ['Objective-C', 'class-dump', 'Method swizzling', 'Code signing'],
-    featured: true,
     shot: {
       src: '/projects/noreels/demo.gif',
       still: '/projects/noreels/screenshot.png',
