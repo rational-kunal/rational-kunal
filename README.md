@@ -10,12 +10,14 @@ Software engineer with an iOS core. I build things to find out how they work, th
 
 - 🧱 **[NeoBrutalism](https://github.com/rational-kunal/NeoBrutalism)** (149 ★) — hard-edged SwiftUI components, all styled by one view modifier
 - 🖥️ **[BlinkUI](https://github.com/rational-kunal/BlinkUI)** (95 ★) — SwiftUI, but it renders in a terminal and redraws only the cells that changed
+- ⏸️ **[NotTheInstagram](https://github.com/rational-kunal/NotTheInstagram)** — Instagram with friction added to the endless parts; an AI coding agent did most of the digging
 - 🔓 **[NoReelsOnInstagram](https://github.com/rational-kunal/NoReelsOnInstagram)** — switches reels off by swizzling Instagram's own classes and re-signing the app
 - 🏷️ **[keemat](https://github.com/rational-kunal/keemat)** — a price tracker with no account and no server; everything stays on your phone
 - 🎬 **[ChalChitra](https://github.com/rational-kunal/ChalChitra)** — an HLS video player built without AVPlayer
 
 ## Writing
 
+- [I used an AI agent to make my Instagram boring](https://rationalkunal.in/writing/make-instagram-boring-with-an-ai-agent)
 - [Building Optional from scratch](https://rationalkunal.in/writing/building-optional-from-scratch)
 - [Building a Snake game in the terminal with Swift](https://rationalkunal.in/writing/snake-game-in-the-terminal)
 - [ReverseEngineering[0]: UnReel your Instagram](https://rationalkunal.in/writing/unreel-your-instagram)
